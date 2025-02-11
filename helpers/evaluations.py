@@ -205,7 +205,8 @@ def evaluate_all_breakdowns(model, test_routines, lookahead_steps=12, determinis
                 routine_output_step[step, :][new_changes_out] = i
                 routine_ground_truths[step, :][new_changes_gt] = deepcopy(gt_tensor[new_changes_gt])
                 routine_ground_truth_step[step, :][new_changes_gt] = i
-                routine_change_types[step,:][new_changes_gt] = deepcopy(data['change_type'].cpu().to(int)[details['evaluate_node']])[new_changes_gt]
+                # routine_change_types[step,:][new_changes_gt] = deepcopy(data['change_type'].cpu().to(int)[details['evaluate_node']])[new_changes_gt]
+                routine_change_types[step, :][new_changes_gt] = deepcopy(data['change_type'].cpu().to(int)[details['evaluate_node'].cpu()])[new_changes_gt]
                 changes_output_all[step,:] = deepcopy(np.bitwise_or(changes_output_all[step,:], new_changes_out)).to(bool)
                 changes_gt_all[step,:] = deepcopy(np.bitwise_or(changes_gt_all[step,:], new_changes_gt)).to(bool)
 

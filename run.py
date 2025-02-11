@@ -21,11 +21,20 @@ random.seed(23435)
 from numpy import random as nrandom
 nrandom.seed(23435)
 
+import pickle
+
 def run_model(data, group, cfg = {}, checkpoint_dir=None, read_ckpt=False, write_ckpt=False, tags=[], logs_dir='logs', finetune=False):
 
 
     cfg.update(data.params)
     model_configs = adict(cfg)
+    print("type(model_configs)" , type(model_configs))
+        
+    # save model_configs
+    with open("model_configs.pkl", "wb") as f:
+        pickle.dump(model_configs, f)
+    # raise NotImplementedError
+    # torch.save(model_configs, "model_configs.pt")
 
     if read_ckpt:
         print('Looking for checkpoint in ',checkpoint_dir)
@@ -63,7 +72,9 @@ def run_model(data, group, cfg = {}, checkpoint_dir=None, read_ckpt=False, write
 
         epochs = cfg['epochs'] if isinstance(cfg['epochs'],list) else [cfg['epochs']]
         done_epochs = 0
-
+        # print("Training for epochs: ",epochs)
+        # raise NotImplementedError
+        # epochs = [2]
         for epoch in epochs:
             if output_dir[-2] == '_':
                 output_dir_new = output_dir[:-2]+'_'+str(epoch)+'epochs'+output_dir[-2:]
