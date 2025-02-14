@@ -4,6 +4,15 @@ import networkx as nx
 from pyvis.network import Network
 import os
 import tempfile
+import pickle
+
+import torch
+import sys
+sys.path.append('helpers')
+
+from helpers.reader import RoutinesDataset
+from helpers.encoders import TimeEncodingOptions
+
 
 node_name = torch.load("node_classes.pt")
 
@@ -11,16 +20,7 @@ def load_log(log_file):
     """Load the PyTorch log file and return the stored data."""
     data = torch.load(log_file, map_location=torch.device('cpu'))
     return data
-def tensor_to_string(tensor):
-    st  = "["
-    print("tensor.shape: ", tensor.shape)
-    for i in range(tensor.shape[0]):
-        val = tensor[i].item()
-        val = round(val, 2)
-        st += str(val) + ", "
-    st = st[:-2]
-    st += "]"
-    return st
+
 def generate_text(predicted_movements, influential_movements):
     # predicted movements: {obj1: [curr_pose, pred_pose], obj2: [curr_pose, pred_pose],  .... }
     # influential_movements: {obj1: [[influential_obj1, old_pose, new_pose],[influential_obj2, old_pose, new_pose], .... ], obj2: [...]}
@@ -30,40 +30,25 @@ def generate_text(predicted_movements, influential_movements):
     print("keys: ")
     print("predicted_movements: ")
     print(predicted_movements.keys())
-    print("influential_movements: ")
+    print("influential_movements:")
     print(influential_movements.keys())
     print("#############################")
-    print("influentaial movements: ")
+    print("influentaial movements:")
     print(influential_movements)
     print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     for key in keys:
         print("key: ", key, "len(influential_movements[key]): ", len(influential_movements[key]))
     # raise NotImplementedError
-
     for key in keys:
         predicted = predicted_movements[key]
         text = f"I predict that {node_name[key]} moves from {node_name[predicted[0].item()]} to  {node_name[predicted[1].item()]} -- because, --"
-        confidences = []
-        if_new = sorted(influential_movements[key], key=lambda x: x[3].item(), reverse=False)
-
-        for influential_movement in if_new:
-            print("confidences::: ", influential_movement[3].item())
-            confidences.append(influential_movement[3])
-        confidences = sorted(confidences, reverse=True)
-        no_candidates = min(3, len(confidences))
-        if no_candidates != 0:
-            threshold = confidences[no_candidates-1]
-            for influential_movement in influential_movements[key]:
-                if influential_movement[3] < threshold:
-                    continue
-                # print(influential_movement)
-                # raise NotImplementedError
-                # text += f"{node_name[influential_movement[0]]} moved from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2].item()]} (conf: {influential_movement[3]}) ---and---\n"
-                pred_mov_probs = tensor_to_string(influential_movement[4])
-                out_mov_probs = tensor_to_string(influential_movement[5])
-                text += f"{node_name[influential_movement[0]]} moved from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2].item()]} (conf: {influential_movement[3]}) (pred_prob:{pred_mov_probs}) , (out_probs: {out_mov_probs} ---and---\n"
-
-            
+        print("error key:")
+        print(key)
+        for influential_movement in influential_movements[key]:
+            # print(influential_movement)
+            # raise NotImplementedError
+            text += f"{node_name[influential_movement[0]]} moved from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2].item()]} ---and---\n"
+        
         if text[-10:] == "---and---\n":
             text = text[:-10]
         elif text[-13:] == "- because, --":
@@ -85,11 +70,10 @@ def plot_collapsible_tree(graph_data):
     
     # Add nodes and edges
     for i in range(num_nodes):
-        G.add_node(node_name[i]+"_"+str(i))
-        if graph_data[i] >= 0:  # Assuming each node has a parent
-            G.add_edge(node_name[graph_data[i]]+"_"+str(graph_data[i]), node_name[i]+"_"+str(i))
-        else:
-            G.add_edge( "ROOT",node_name[i])
+        # G.add_node(node_name[i]+"_"+str(i))
+        for j in range(num_nodes):
+            if graph_data[i][j] == 1:
+                G.add_edge(node_name[j]+"_"+str(j), node_name[i]+"_"+str(i))
     # G.add_node("ROOT")
     # G.add_node("A")
     # G.add_node("B")
@@ -108,20 +92,50 @@ def plot_collapsible_tree(graph_data):
     net.save_graph(temp_file.name)
     st.components.v1.html(open(temp_file.name, "r").read(), height=700)
 
+
+def get_dataset():
+    with open("model_configs.pkl", "rb") as f:
+            cfg = pickle.load(f)
+    train_days = 30
+    time_options = TimeEncodingOptions(cfg['DATA_INFO']['weeekend_days'] if 'weeekend_days' in cfg['DATA_INFO'].keys() else None)
+    time_encoding = time_options(cfg['time_encoding'])
+    
+
+    data_dir = 'data/HOMER/household0/'
+    data = RoutinesDataset(data_path=os.path.join(data_dir,'processed'), 
+                            time_encoder=time_encoding, 
+                            batch_size=cfg['batch_size'],
+                            max_routines = (train_days, None))
+    return data
+
 def main():
     st.title("Log File Visualization")
+    for name in node_name:
+        print(name)
+
+    data = get_dataset()
+    print("data: ", data)
+    test_routines = data.test_routines
+    day1_routines = test_routines[0][0]
+    print("type(day1_routines): ", type(day1_routines))
+    print("len(day1_routines): ", len(day1_routines))
+    single_time = test_routines.collate_fn([day1_routines[0]])
+    print(single_time['edges'].shape)
+    graph_data = single_time['edges'][0]
     
+    print("graph_data[0:4]: ", graph_data[4,:])
+    # raise NotImplementedError
     # Dropdown to select log file
     # log_files = ["logs/run_4/log_1.pt", "logs/run_4/log_2.pt", "logs/run_4/log_3.pt"]
     # log_files = ["logs/run_7/log_3.pt"]
-    base = "logs/run_34/log_"
+    base = "logs/run_10/log_"
     log_files = []
     for i in range(1, 34):
         log_files.append(base + str(i) + ".pt")
 
-    # only_log_files = ['log_1.pt', 'log_2.pt', 'log_6.pt', 'log_9.pt', 'log_10.pt', 'log_13.pt', 'log_14.pt', 'log_15.pt', 'log_19.pt', 'log_22.pt', 'log_24.pt', 'log_27.pt', 'log_29.pt', 'log_32.pt', 'log_34.pt', 'log_37.pt', 'log_38.pt', 'log_41.pt', 'log_42.pt', 'log_46.pt', 'log_50.pt']
-    # base = "logs/run_7/"
-    # log_files = [base + log_file for log_file in only_log_files]
+    only_log_files = ['log_1.pt', 'log_2.pt', 'log_6.pt', 'log_9.pt', 'log_10.pt', 'log_13.pt', 'log_14.pt', 'log_15.pt', 'log_19.pt', 'log_22.pt', 'log_24.pt', 'log_27.pt', 'log_29.pt', 'log_32.pt', 'log_34.pt', 'log_37.pt', 'log_38.pt', 'log_41.pt', 'log_42.pt', 'log_46.pt', 'log_50.pt']
+    base = "logs/run_7/"
+    log_files = [base + log_file for log_file in only_log_files]
 
     selected_log = st.selectbox("Select a log file", log_files)
     text_to_display = "Please select a log file first."
@@ -131,10 +145,9 @@ def main():
         # Extract adjacency matrix from log data (assuming it's the first element)
         if isinstance(log_data, list) and len(log_data) > 0:
             adjacency_matrix = log_data[0]  # Extract the first entry
-            
             if isinstance(adjacency_matrix, torch.Tensor):
                 adjacency_matrix = adjacency_matrix.numpy()
-                plot_collapsible_tree(adjacency_matrix)
+                plot_collapsible_tree(graph_data)
             else:
                 st.error("Unexpected data format in log file.")
         else:

@@ -1,6 +1,6 @@
 import torch
 import sys
-sys.path.append('helpers')
+# sys.path.append('helpers')
 
 from adict import adict
 
@@ -9,8 +9,8 @@ import yaml
 import pickle
 import os
 
-from reader import RoutinesDataset
-from encoders import TimeEncodingOptions
+from helpers.reader import RoutinesDataset
+from helpers.encoders import TimeEncodingOptions
 
 
 import numpy as np
@@ -78,9 +78,14 @@ class Explainer:
         self.num_nodes = 108
     
     def label_coding(self, onehot_tensor):
-        # print("onehot_tensor_shape", onehot_tensor.shape)
+        assert len(onehot_tensor.shape) == 3
+        assert onehot_tensor.shape[0] == 1
+        assert onehot_tensor.shape[2] == self.num_nodes
+        assert onehot_tensor.shape[1] == self.num_nodes
+        #print("onehot_tensor_shape", onehot_tensor.shape)
         # Does the inverse of onehot encoding
-        tnsr = torch.argmax(onehot_tensor, dim=1)
+        # raise NotImplementedError
+        tnsr = torch.argmax(onehot_tensor, dim=2)
         tnsr = tnsr.squeeze(0)
         # print("tnsr_shape", tnsr.shape)
         # raise NotImplementedError
@@ -219,71 +224,29 @@ class Explainer:
         onehot = torch.zeros(self.num_nodes)
         onehot[ind] = 1
         return onehot
-        
-    # def perturbation_test(self, curr_routine, pred_true, historic_movements, pred_movements,curr_movements):
-    #     # iterate through true movements
-    #     # print types:
-    #     print("type curr_rooutine", type(curr_routine))
-    #     print("type pred_true", type(pred_true))
-    #     print("type historic_movements", type(historic_movements))
-    #     print("type pred_movements", type(pred_movements))
-    #     print("type curr_movements", type(curr_movements))
-    #     print("Curr movements_shape", curr_movements.shape)
-    #     movement_mask = curr_movements[:,0]-curr_movements[:,1]
-    #     movement_mask = movement_mask!=0
-    #     print(f'Movement mask: {movement_mask}')
-    #     print("Movement mask shape", movement_mask.shape)   
-    #     # raise NotImplementedError
+    def print_tensor(self, tensor, ind=None):
+        tensor = tensor[0]
+        for i in range(tensor.shape[0]):
+            if ind is not None:
+                if i!=ind:
+                    continue
+            print("row", i, end = ":")
+            for j in range(tensor.shape[1]):
+                num = tensor[i,j].item()
+                # convert to 2 decimal places
+                num = round(num, 2)
+                print(num, end = " ")
+            print()
 
-    #     successful_perturbations = {}
-    #     for ind in historic_movements.keys():
-    #         successful_perturbations[ind] = [[],[],[],False]
-    #         # iterate through movements
-    #         movements = historic_movements[ind]
-    #         for movement in movements:
-    #             # perturb the input
-    #             tmp = curr_routine['edges'][0,ind,:]
-    #             # print("tmp_shape", tmp.shape)
-    #             # print("movement:",movement)
-    #             # print(self.onehot(movement).shape)
-    #             # raise NotImplementedError
-
-    #             curr_routine['edges'][0,ind,:] = self.onehot(movement)
-    #             inp, pred, gt, _ = self.model_infer(curr_routine)
-    #             curr_routine['edges'][0,ind,:] = tmp
-    #             # detect movement
-    #             movement_detected = self.detect_pred_diff(pred_true, pred, movement_mask)
-    #             if movement_detected:
-    #                 successful_perturbations[ind][3] = True
-    #                 successful_perturbations[ind][1].append(movement)
-    #             else:
-    #                 successful_perturbations[ind][0].append(movement)
-
-    #     # iterate through window_pred_movements
-    #     for ind, movements in pred_movements.items():
-    #         # continue
-    #         # iterate through movements
-    #         for movement in movements:
-    #             # perturb the input
-    #             tmp = curr_routine['edges'][0,ind,:]
-    #             curr_routine['edges'][0,ind,:] = movement
-    #             inp, pred, gt, _ = self.model_infer(curr_routine)
-    #             curr_routine['edges'][0,ind,:] = tmp
-    #             # detect movement
-    #             movement_detected, movement_inds, movements = self.detect_movement(inp, pred)
-    #             if movement_detected:
-    #                 successful_perturbations.append((ind, movement,tmp))
-    #     if len(successful_perturbations)>0:
-    #         print(f'Successful perturbations: {successful_perturbations}')
-    #         raise NotImplementedError
-    #     return successful_perturbations
-    def perturbation_test(self, curr_routine, pred_true, historic_movements, pred_movements,curr_movements,curr_movement_inds):
+    def perturbation_test(self, curr_routine, pred_true, pred_prob, historic_movements, pred_movements,curr_movements,curr_movement_inds):
         # inputs:
         # curr_routine: input data for the model: 
         # dictionary keys: ['edges', 'nodes', 'context_time', 'y_edges', 'y_nodes', 'dynamic_edges_mask', 'time', 'change_type']
         #
         # pred_true: Original predicted output for reference : 
         # Tensor [108]
+        #
+        # Pred_prob: Original predicted output probabilities
         #
         # historic_movements: true movements that happened in the past :
         # dictionary: {obj1: [[prev_pos1, prev_pos2, ...], obj2: [prev_pos1, prev_pos2, ...]} 
@@ -322,8 +285,12 @@ class Explainer:
         curr_graph = self.label_coding(curr_routine['edges'])
         predicted_movements = {}
         influential_movements = {}
+        # time: 
 
+        print("--------------------------------------------------")
         for mov in curr_movement_inds:
+            print("num_of_historic_movements", len(historic_movements.keys()))
+            print("num_of_pred_movements", len(pred_movements.keys()))
             mov_key = mov.item()
             predicted_movements[mov_key] = [curr_movements[0,mov], curr_movements[1,mov]]
             influential_movements[mov_key] = []
@@ -332,28 +299,45 @@ class Explainer:
                 # curr_routine['edges'][0,obj,:] = self.onehot(curr_movements[1,mov])
                 for obj_mov in historic_movements[obj]:
                     curr_routine['edges'][0,obj,:] = self.onehot(obj_mov)
-                    inp, pred, gt, _ = self.model_infer(curr_routine)
+                    inp, pred, gt, out_probs = self.model_infer(curr_routine)
                     # print("pred_shape", pred.shape)
                     # print("pred_true_shape", pred_true.shape)
                     # raise NotImplementedError
                     # is the movement influential
-                    if(pred_true[mov]  == pred[mov]):
-                        influential_movements[mov_key].append([obj, obj_mov, curr_movements[1,mov]])
+                    
+                    # if(pred_true[mov]  == pred[mov]):
+                    if True: ### TODO: Is no filtering fine?
+                        influence_level = pred_prob[0,mov,pred_true[mov]] - out_probs[0,mov,pred_true[mov]]
+
+                        influential_movements[mov_key].append([obj, obj_mov, curr_movements[1,mov], influence_level])
                 curr_routine['edges'][0,obj,:] = tmp
             for obj in pred_movements.keys():
                 tmp = curr_routine['edges'][0,obj,:]
                 # curr_routine['edges'][0,obj,:] = self.onehot(curr_movements[1,mov])
                 for obj_mov in pred_movements[obj]:
                     curr_routine['edges'][0,obj,:] = self.onehot(obj_mov)
-                    inp, pred, gt, _ = self.model_infer(curr_routine)
+                    inp, pred, gt, out_probs = self.model_infer(curr_routine)
                     # raise NotImplementedError
                     # is the movement influential
-                    if(pred_true[mov]  == pred[mov]):
-                        influential_movements[mov_key].append([obj, obj_mov, curr_movements[1,mov]])
+                    # if(pred_true[mov]  == pred[mov]):
+                    if True: ### TODO: Is no filtering fine?
+                        # print("mov:", mov)
+                        # print("pred_probs:")
+                        # self.print_tensor(pred_prob,mov)
+                        # print("out_probs:")
+                        # self.print_tensor(out_probs,mov)
+                        
+                        influence_level = pred_prob[0,mov,pred_true[mov]] - out_probs[0,mov,pred_true[mov]]
+                        print("influence_level", influence_level)
+                        # raise NotImplementedError
+                        influential_movements[mov_key].append([obj, obj_mov, curr_movements[1,mov], influence_level,pred_prob[0,mov,:],out_probs[0,mov,:]])
                 curr_routine['edges'][0,obj,:] = tmp
         
             data = [curr_graph, predicted_movements, influential_movements]
             self.logger.log(data)
+        print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+        print("--------------------------------------------------")
+        # time perturbations:
         
         return curr_graph, predicted_movements, influential_movements
 
@@ -374,6 +358,8 @@ class Explainer:
 
             # loop through routine
             historic_movements = {}
+            print("routine_length", routine_length)
+            # raise NotImplementedError
             for step in range(routine_length):
                 
                 routines_in_window = [test_routines.collate_fn([day_routine[j]]) for j in range(step, min(step+self.lookahead_steps, routine_length))]
@@ -429,7 +415,8 @@ class Explainer:
                     if movement_detected:
                         print(f'Movement detected at step {step}')
                         # Do perturbation test
-                        self.perturbation_test(curr_step, pred, historic_movements, window_pred_movements,movements, movement_inds)
+                        pred_prob = prev_edges
+                        self.perturbation_test(curr_step, pred, pred_prob, historic_movements, window_pred_movements,movements, movement_inds)
                         
                     else:
                         print(f'No movement detected at step {step}')
@@ -442,6 +429,7 @@ class Explainer:
 
                 movement_detected, movement_inds, movements = self.detect_movement(curr_step_edge, next_step_edge)
                 self.add_movements(historic_movements, movement_inds, movements, step)
+            break
         # run inference on each routine
 
 
