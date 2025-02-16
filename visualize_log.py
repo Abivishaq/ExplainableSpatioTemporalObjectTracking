@@ -44,26 +44,28 @@ def generate_text(predicted_movements, influential_movements):
         predicted = predicted_movements[key]
         text = f"I predict that {node_name[key]} moves from {node_name[predicted[0].item()]} to  {node_name[predicted[1].item()]} -- because, --"
         confidences = []
-        if_new = sorted(influential_movements[key], key=lambda x: x[3].item(), reverse=False)
-
-        for influential_movement in if_new:
+        influential_movements[key] = sorted(influential_movements[key], key=lambda x: x[3].item(), reverse=True)
+        
+        for influential_movement in influential_movements[key]:
             print("confidences::: ", influential_movement[3].item())
             confidences.append(influential_movement[3])
         confidences = sorted(confidences, reverse=True)
         no_candidates = min(3, len(confidences))
         if no_candidates != 0:
             threshold = confidences[no_candidates-1]
+            threshold = max(0.5, threshold)
             for influential_movement in influential_movements[key]:
                 if influential_movement[3] < threshold:
                     continue
                 # print(influential_movement)
                 # raise NotImplementedError
                 # text += f"{node_name[influential_movement[0]]} moved from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2].item()]} (conf: {influential_movement[3]}) ---and---\n"
-                pred_mov_probs = tensor_to_string(influential_movement[4])
-                out_mov_probs = tensor_to_string(influential_movement[5])
-                text += f"{node_name[influential_movement[0]]} moved from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2].item()]} (conf: {influential_movement[3]}) (pred_prob:{pred_mov_probs}) , (out_probs: {out_mov_probs} ---and---\n"
+                print("Len of influential_movement: ", len(influential_movement))
+                # pred_mov_probs = tensor_to_string(influential_movement[4])
+                # out_mov_probs = tensor_to_string(influential_movement[5])
+                # verbose: # text += f"{node_name[influential_movement[0]]} moved from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2].item()]} (conf: {influential_movement[3]}) (pred_prob:{pred_mov_probs}) , (out_probs: {out_mov_probs} ---and---\n"
+                text += f"{node_name[influential_movement[0]]} moved from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2]]} (conf: {influential_movement[3]}) ---and---\n"
 
-            
         if text[-10:] == "---and---\n":
             text = text[:-10]
         elif text[-13:] == "- because, --":
@@ -114,7 +116,12 @@ def main():
     # Dropdown to select log file
     # log_files = ["logs/run_4/log_1.pt", "logs/run_4/log_2.pt", "logs/run_4/log_3.pt"]
     # log_files = ["logs/run_7/log_3.pt"]
-    base = "logs/run_34/log_"
+    # get run number
+    with open("logs/log_no.txt", "r") as f:
+        run_no = f.read()
+    run_no = int(run_no) - 1
+    base = "logs/run_" + str(run_no) + "/log_"
+    # base = "logs/run_46/log_"
     log_files = []
     for i in range(1, 34):
         log_files.append(base + str(i) + ".pt")
