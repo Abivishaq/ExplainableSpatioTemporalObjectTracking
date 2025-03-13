@@ -5,11 +5,8 @@ from pyvis.network import Network
 import os
 import tempfile
 from helpers.encoders import time_external
-from GPT_explainer import GPTExplainer
 
 node_name = torch.load("node_classes.pt")
-
-gpt_explainer = GPTExplainer()
 
 
 def load_log(log_file):
@@ -30,8 +27,7 @@ def generate_text(predicted_movements, influential_movements,time_influence):
     # predicted movements: {obj1: [curr_pose, pred_pose], obj2: [curr_pose, pred_pose],  .... }
     # influential_movements: {obj1: [[influential_obj1, old_pose, new_pose],[influential_obj2, old_pose, new_pose], .... ], obj2: [...]}
     keys = predicted_movements.keys()
-    raw_exp_text = ""
-    gpt_explanations = ""
+    full_text = ""
     # 
     print("keys: ")
     print("predicted_movements: ")
@@ -79,87 +75,27 @@ def generate_text(predicted_movements, influential_movements,time_influence):
         print("text[-13:]")
         print(text[-13:])
         text +="."
-        int_to_time = ""
+        
         # Add time influence
-        # moring: 6:00 to 12:00 -> 0 to 33
-        # afternoon: 12:00 to 18:00 -> 33 to 69
-        # evening: 18:00 to 25:30 -> 69 to 108
-
-        morning_influence = torch.tensor(time_influence[key][1][0:33])
-        afternoon_influence = torch.tensor(time_influence[key][1][33:69])
-        evening_influence = torch.tensor(time_influence[key][1][69:108])
-        
-
-        # Filtering:
-        # Morning:
-        # print("morning_influence: ", morning_influence)
-        morning_mean = torch.mean(morning_influence)
-        morning_std = torch.std(morning_influence)
-        morning_influence = morning_influence[morning_influence > morning_mean - 2*morning_std]
-        morning_influence = morning_influence[morning_influence < morning_mean + 2*morning_std]
-        morning_influence = torch.mean(morning_influence).item()
-        morning_influence = round(morning_influence, 2)
-
-        # Afternoon:
-        afternoon_mean = torch.mean(afternoon_influence)
-        afternoon_std = torch.std(afternoon_influence)
-        afternoon_influence = afternoon_influence[afternoon_influence > afternoon_mean - 2*afternoon_std]
-        afternoon_influence = afternoon_influence[afternoon_influence < afternoon_mean + 2*afternoon_std]
-        afternoon_influence = torch.mean(afternoon_influence).item()
-        afternoon_influence = round(afternoon_influence, 2)
-        
-        # Evening:
-        evening_mean = torch.mean(evening_influence)
-        evening_std = torch.std(evening_influence)
-        evening_influence = evening_influence[evening_influence > evening_mean - 2*evening_std]
-        evening_influence = evening_influence[evening_influence < evening_mean + 2*evening_std]
-        evening_influence = torch.mean(evening_influence).item() 
-        evening_influence = round(evening_influence, 2)
-        
-        time_text = "The confidence of the prediction if it is in the morning "
-        if morning_influence > 0.0:
-            time_text += "increases by " + str(morning_influence) + ".\n"
-        else:
-            time_text += "decreases by " + str(-1*morning_influence) + ".\n"
-        time_text += "The confidence of the prediction if it is in the afternoon "
-        if afternoon_influence > 0.0:
-            time_text += "increases by " + str(afternoon_influence) + ".\n"
-        else:
-            time_text += "decreases by " + str(-1*afternoon_influence) + ".\n"
-        time_text += "The confidence of the prediction if it is in the evening "
-        if evening_influence > 0.0:
-            time_text += "increases by " + str(evening_influence) + ".\n"
-        else:
-            time_text += "decreases by " + str(-1*evening_influence) + ".\n"
-
-        # time_text = '['
-        # for i in range(len(time_influence[key][1])):
-        #     val_time = time_influence[key][0][i]
-        #     time_semantic = time_external(val_time).tolist()
-        #     # time_semantic_txt = 'week:'+str(int(time_semantic[0]))+'day:'+str(int(time_semantic[1]))+'hours:'+str(int(time_semantic[2]))+'mins:'+str(int(time_semantic[3]))
-        #     time_semantic_txt = str(int(time_semantic[2]))+':'+str(int(time_semantic[3]))
-        #     int_to_time += "("+str(i)+","+time_semantic_txt+","+str(val_time)+"), \n"
-        #     val = time_influence[key][1][i]
-        #     # val to 2 decimal places
-        #     val = round(val, 2
-        #     time_text= time_text + '('+time_semantic_txt+','+str(val) + "),"
-        # time_text = time_text[:-2]
-        # time_text += "]"
+        time_text = '['
+        for i in range(len(time_influence[key][1])):
+            val_time = time_influence[key][0][i]
+            time_semantic = time_external(val_time).tolist()
+            # time_semantic_txt = 'week:'+str(int(time_semantic[0]))+'day:'+str(int(time_semantic[1]))+'hours:'+str(int(time_semantic[2]))+'mins:'+str(int(time_semantic[3]))
+            time_semantic_txt = str(int(time_semantic[2]))+':'+str(int(time_semantic[3]))
+            
+            val = time_influence[key][1][i]
+            # val to 2 decimal places
+            val = round(val, 2)
+            time_text= time_text + '('+time_semantic_txt+','+str(val) + "), "
+        time_text = time_text[:-2]
+        time_text += "]"
 
         text += f"Time influence: {time_text}"
-        
-        gpt_explanations += gpt_explainer.request(text)+'\n\n'
-        
-        raw_exp_text += text
-        raw_exp_text += "\n\n"
-        print("time_influence:",time_influence[key])
-        print("int_to_time:",int_to_time)
+        full_text += text
+        full_text += "\n\n"
         # print(predicted)
         # raise NotImplementedError  # Remove this line and implement the function
-
-        
-    full_text = raw_exp_text + "\n\n" + gpt_explanations[:-1]
-        
     return full_text
 
 def plot_collapsible_tree(graph_data):

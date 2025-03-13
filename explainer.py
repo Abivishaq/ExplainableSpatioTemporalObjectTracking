@@ -59,6 +59,7 @@ class Explainer:
         time_options = TimeEncodingOptions(cfg['DATA_INFO']['weeekend_days'] if 'weeekend_days' in cfg['DATA_INFO'].keys() else None)
         time_encoding = time_options(cfg['time_encoding'])
         self.logger = Logger()
+        self.time_encoding = time_encoding
 
         data_dir = 'data/HOMER/household0/'
         data = RoutinesDataset(data_path=os.path.join(data_dir,'processed'), 
@@ -146,14 +147,15 @@ class Explainer:
 
         for i, routine in enumerate(routines):
             if i != 0:
+                raise ValueError("Currenly running only one timestep runs.")
                 routine['edges'] = prev_edges
             if self.use_cuda:
                 for k in routine.keys():
                     routine[k] = routine[k].cuda()
             _, details,_ = self.model.step(routine)
             if i == 0:
-                input_tensor = details['input']['location']#[details['evaluate_node']].cpu()
-            prev_edges = details['output_probs']['location'].to(torch.float32)#[details['evaluate_node']].cpu()
+                input_tensor = details['input']['location'] #[details['evaluate_node']].cpu()
+            prev_edges = details['output_probs']['location'].to(torch.float32) #[details['evaluate_node']].cpu()
         
         gt_tensor = details['gt']['location']#[details['evaluate_node']].cpu()
         output_tensor = details['output']['location']#[details['evaluate_node']].cpu()
@@ -259,14 +261,50 @@ class Explainer:
         curr_graph = self.label_coding(curr_routine_window[0]['edges'])
         predicted_changes = {}
         influential_movements = {}
+        time_influence = {}
+        print("True time", curr_routine_window[0]['time'])
+        true_time = int(curr_routine_window[0]['time'].item())
         for chg_ind in change_inds:
             # print("num_of_historic_movements", len(historic_movements.keys()))
             # print("num_of_pred_movements", len(pred_movements.keys()))
             # chg_ind = mov
             predicted_changes[chg_ind] = [curr_transitions[0,chg_ind], curr_transitions[1,chg_ind]]
             influential_movements[chg_ind] = []
+            time_influence[chg_ind] = [[],[]]
+
+
+            # Time perturbations
+            tmp_time = curr_routine_window[0]['time'].clone()
+            tmp_context_time = curr_routine_window[0]['context_time'].clone()
+            # TODO: this is inefficient, Don't need to process time for each change separately. Only need change the index of which you are taking the diff. 
+            for t in range(380,1551,10):
+                perturb_context_time = self.time_encoding(float(t)).unsqueeze(0)
+                curr_routine_window[0]['time'] = torch.tensor([float(t)])
+                curr_routine_window[0]['context_time'] = perturb_context_time
+                inp, pred, gt, out_probs = self.model_infer(curr_routine_window,len(curr_routine_window))
+                influence_level = out_probs[0,chg_ind,pred_true[chg_ind]] - pred_prob[0,chg_ind,pred_true[chg_ind]]
+                # pred_ind = 
+                # influence_level = out_probs[0,chg_ind,:].max() - pred_prob[0,chg_ind,:].max()
+                if t == true_time:
+                    print("True influence level", influence_level.item())
+                    # assert influence_level.item() == 0
+                    if influence_level.item() != 0:
+                        raise ValueError("Error: Something is wrong.")
+                        time_influence[chg_ind][0]= []
+                        time_influence[chg_ind][1]= []
+                        break
+                    # print("True influence level2", influence_level2)
+                # assert influence_level == influence_level2
+
+                time_influence[chg_ind][0].append(t)
+                time_influence[chg_ind][1].append(influence_level.item())
+            curr_routine_window[0]['time'] = tmp_time
+            curr_routine_window[0]['context_time'] = tmp_context_time
+
+            # # Movement perturbations
+
             for obj in historic_movements.keys():
-                tmp = curr_routine_window[0]['edges'][0,obj,:]
+                tmp = curr_routine_window[0]['edges'][0,obj,:].clone()
                 obj_curr_pos = torch.argmax(tmp).item()
                 # print("obj_curr_pos", obj_curr_pos)
                 # raise NotImplementedError
@@ -282,17 +320,20 @@ class Explainer:
                     # if(pred_true[mov]  == pred[mov]):
                     if True: ### TODO: Is no filtering fine?
                         influence_level = pred_prob[0,chg_ind,pred_true[chg_ind]] - out_probs[0,chg_ind,pred_true[chg_ind]]
+                        # influence_level = pred_prob[0,chg_ind,:].max() - out_probs[0,chg_ind,:].max()
 
                         influential_movements[chg_ind].append([obj, obj_mov, obj_curr_pos, influence_level, pred_prob[0,chg_ind,:], out_probs[0,chg_ind,:]])
                 curr_routine_window[0]['edges'][0,obj,:] = tmp
             # for obj in pred_movements.keys():
             #     raise ValueError("Logic error: pred movements should not be considered!!!")
             
-            # Time perturbations
 
 
-                
-        data = [curr_graph, predicted_changes, influential_movements]
+
+
+
+        print("time_influence", time_influence)
+        data = [curr_graph, predicted_changes, influential_movements, time_influence]
         self.logger.log(data)
         # raise NotImplementedError
         # time perturbations:
@@ -336,10 +377,30 @@ class Explainer:
                 inp, pred, gt, prev_edges = self.model_infer(routines_in_window,len(routines_in_window))
                 movement_detected, movement_inds, movements = self.detect_movement(inp, pred)
                 if movement_detected:
+                    # Only keep movement_inds that are correct
+                    correct_mov_inds = []
+                    for mv in movement_inds:
+                        # print("vals:")
+                        # print(routines_in_window[0]['y_edges'][0,mv,:].shape)
+                        # print(torch.argmax(routines_in_window[0]['y_edges'][0,mv,:]))
+                        # print(routines_in_window[0]['y_edges'][0,mv,:])
+
+                        true_obj_parent = torch.argmax(routines_in_window[0]['y_edges'][0,mv,:]).item()
+                        # print(true_obj_parent)
+                        # print(pred[mv])
+                        predicted_obj_parent = pred[mv]
+                        if true_obj_parent == predicted_obj_parent:
+                            correct_mov_inds.append(mv)
+                        # raise KeyboardInterrupt
+                    
+
                     # print(f'Movement predicted at step {step}')
                     # Do perturbation test
                     pred_prob = prev_edges
-                    self.perturbation_test(routines_in_window, pred, pred_prob, historic_movements,movements, movement_inds)
+                    # self.perturbation_test(routines_in_window, pred, pred_prob, historic_movements,movements, movement_inds)
+                    if(len(correct_mov_inds)>0):
+                        self.perturbation_test(routines_in_window, pred, pred_prob, historic_movements,movements, correct_mov_inds)
+                    
                 else:
                     # print(f'No movement detected at step {step}')
                     pass
@@ -368,7 +429,6 @@ class Explainer:
                             hst_mv_str += f'{self.node_name[mv]}+({mv}), '
                         hst_mv_str += '\n'
                     print(hst_mv_str)
-            break
         # run inference on each routine
 
 
