@@ -8,9 +8,22 @@ from helpers.encoders import time_external
 from GPT_explainer import GPTExplainer
 
 node_name = torch.load("node_classes.pt")
+node_name[80] = "lemonade"
+node_name[81] = "juice_glass"
 
 gpt_explainer = GPTExplainer()
-
+def convert_to_markdown(data):
+    i=0
+    while(True):
+        if(data[i]=="\n" and not data[i+1]=="\n"):
+            if(not data[i-1] == "\n"):
+                data = data[:i] +"  "+data[i:]
+                print(data)
+                i+=2
+        i+=1
+        if i>=len(data)-1:
+            break
+    return data
 
 def load_log(log_file):
     """Load the PyTorch log file and return the stored data."""
@@ -18,7 +31,7 @@ def load_log(log_file):
     return data
 def tensor_to_string(tensor):
     st  = "["
-    print("tensor.shape: ", tensor.shape)
+    # print("tensor.shape: ", tensor.shape)
     for i in range(tensor.shape[0]):
         val = tensor[i].item()
         val = round(val, 2)
@@ -26,39 +39,113 @@ def tensor_to_string(tensor):
     st = st[:-2]
     st += "]"
     return st
-def generate_text(predicted_movements, influential_movements,time_influence):
+
+def get_parents_and_children(curr_graph,active_nodes):
+    active_nodes_tensor = torch.tensor(active_nodes, dtype=torch.long, device=curr_graph.device)
+
+    # Get parents directly
+    parents = curr_graph[active_nodes_tensor]
+
+    # Vectorized: For each node, find if it's a parent of any other node
+    # Create a (len(active_nodes), len(curr_graph)) comparison matrix
+    comparisons = active_nodes_tensor[:, None] == curr_graph[None, :]
+    # Each row i now contains a boolean mask of where curr_graph == active_nodes[i]
+    children_lists = [torch.nonzero(row, as_tuple=False).flatten().tolist() for row in comparisons]
+
+    # Interleave parents and children into result
+    result = []
+    for p, n in zip(parents.tolist(), active_nodes):
+        result.append((n, p))
+    
+    for children,n in zip(children_lists, active_nodes):
+        for c in children:
+            result.append((c,n))
+
+    result = list(set(result))
+
+    return result
+
+def edges_to_text(edges):
+    context = "" 
+    for edge in edges: 
+        context += f"{node_name[edge[0]]} is in/on {node_name[edge[1]]}. \n"
+
+    return context
+
+def get_active_nodes(predicted_movements, influential_movements,key):
+    active_nodes = []
+    
+    active_nodes.append(key)
+    active_nodes.append(predicted_movements[key][0])
+    active_nodes.append(predicted_movements[key][1])
+    for influential_movement in influential_movements[key]:
+        active_nodes.append(influential_movement[0])
+        active_nodes.append(influential_movement[1])
+    active_nodes = list(set(active_nodes))
+    return active_nodes
+
+def summarized_curr_graph_to_text(curr_graph, predicted_movements, influential_movements,key):
+    active_nodes = get_active_nodes(predicted_movements, influential_movements,key)
+    parents_and_children = get_parents_and_children(curr_graph, active_nodes)
+    curr_graph_txt = edges_to_text(parents_and_children)
+    return curr_graph_txt
+
+def curr_graph_to_text(curr_graph):
+    print("curr_graph: ", type(curr_graph))
+    print("curr_graph.shape: ", curr_graph.shape)   
+    print("curr_graph: ", curr_graph)
+    curr_graph_text = "The current graph of the household is: "
+    for i in range(curr_graph.shape[0]):
+        print("node: ", node_name[i],"->", node_name[curr_graph[i]])
+        curr_graph_text += node_name[i] +' is connected to '+ node_name[curr_graph[i]] + '.\n'
+
+    
+    
+    return(curr_graph_text)
+
+
+def generate_text(curr_graph, predicted_movements, influential_movements,time_influence, true_time):
     # predicted movements: {obj1: [curr_pose, pred_pose], obj2: [curr_pose, pred_pose],  .... }
     # influential_movements: {obj1: [[influential_obj1, old_pose, new_pose],[influential_obj2, old_pose, new_pose], .... ], obj2: [...]}
+    # curr_graph_text = curr_graph_to_text(curr_graph)
+    
+
+
     keys = predicted_movements.keys()
     raw_exp_text = ""
     gpt_explanations = ""
-    # 
-    print("keys: ")
-    print("predicted_movements: ")
-    print(predicted_movements.keys())
-    print("influential_movements: ")
-    print(influential_movements.keys())
-    print("#############################")
-    print("influentaial movements: ")
-    print(influential_movements)
-    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-    for key in keys:
-        print("key: ", key, "len(influential_movements[key]): ", len(influential_movements[key]))
+    curr_time_semantic = time_external(true_time).tolist()
+    curr_time_semantic_txt = ""
+    hours = curr_time_semantic[2]
+    minutes = curr_time_semantic[3]
+    hours = int(hours)
+    minutes = int(minutes)
+    if hours > 12:
+        hours = hours - 12
+        curr_time_semantic_txt = str(hours) + ":" + str(minutes) + " PM"
+    else:
+        curr_time_semantic_txt = str(hours) + ":" + str(minutes) + " AM"
+    
+        
+    
+    # for key in keys:
+    #     print("key: ", key, "len(influential_movements[key]): ", len(influential_movements[key]))
     # raise NotImplementedError
 
     for key in keys:
         predicted = predicted_movements[key]
-        text = f"My prediction of {node_name[key]} moving from {node_name[predicted[0].item()]} to  {node_name[predicted[1].item()]} -- is influenced by, --"
+        summarized_cg_txt = "The current state: \n" + summarized_curr_graph_to_text(curr_graph, predicted_movements, influential_movements,key)
+        text = summarized_cg_txt + f"I predict that {node_name[key]} moves from {node_name[predicted[0].item()]} to  {node_name[predicted[1].item()]}. "
         confidences = []
         influential_movements[key] = sorted(influential_movements[key], key=lambda x: x[3].item(), reverse=True)
         
         for influential_movement in influential_movements[key]:
-            print("confidences::: ", influential_movement[3].item())
+            # print("confidences::: ", influential_movement[3].item())
             confidences.append(influential_movement[3])
         confidences = sorted(confidences, reverse=True)
         no_candidates = min(3, len(confidences))
         if no_candidates != 0:
-            threshold = 0.65 #confidences[no_candidates-1]
+            threshold = 0.2 #confidences[no_candidates-1]
             # threshold = max(0.5, threshold)
             for influential_movement in influential_movements[key]:
                 if influential_movement[3] < threshold:
@@ -66,19 +153,20 @@ def generate_text(predicted_movements, influential_movements,time_influence):
                 # print(influential_movement)
                 # raise NotImplementedError
                 # text += f"{node_name[influential_movement[0]]} moved from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2].item()]} (conf: {influential_movement[3]}) ---and---\n"
-                print("Len of influential_movement: ", len(influential_movement))
+                # print("Len of influential_movement: ", len(influential_movement))
                 # pred_mov_probs = tensor_to_string(influential_movement[4])
                 # out_mov_probs = tensor_to_string(influential_movement[5])
                 # verbose: # text += f"{node_name[influential_movement[0]]} moved from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2].item()]} (conf: {influential_movement[3]}) (pred_prob:{pred_mov_probs}) , (out_probs: {out_mov_probs} ---and---\n"
-                text += f"{node_name[influential_movement[0]]} moving from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2]]} (conf: {influential_movement[3]}) ---and---\n"
-
+                # text += f"{node_name[influential_movement[0]]} moving from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2].item()]} (conf: {influential_movement[3]}) ---and---\n"
+                if type(influential_movement[3]) == torch.Tensor:
+                    influential_movement[3] = influential_movement[3].item()
+                text += f"My prediction confidence reduces by {round(influential_movement[3], 2)} if {node_name[influential_movement[0]]} did not move from {node_name[influential_movement[1]]} to {node_name[influential_movement[2]]}.\n"
         if text[-10:] == "---and---\n":
             text = text[:-10]
         elif text[-13:] == "- because, --":
             text = text[:-14]
-        print("text[-13:]")
-        print(text[-13:])
-        text +="."
+        
+        # text +="."
         int_to_time = ""
         # Add time influence
         # moring: 6:00 to 12:00 -> 0 to 33
@@ -116,17 +204,17 @@ def generate_text(predicted_movements, influential_movements,time_influence):
         evening_influence = torch.mean(evening_influence).item() 
         evening_influence = round(evening_influence, 2)
         
-        time_text = "The confidence of the prediction if it is in the morning "
+        time_text = "The mean confidence of the prediction if it is in the morning "
         if morning_influence > 0.0:
             time_text += "increases by " + str(morning_influence) + ".\n"
         else:
             time_text += "decreases by " + str(-1*morning_influence) + ".\n"
-        time_text += "The confidence of the prediction if it is in the afternoon "
+        time_text += "The mean confidence of the prediction if it is in the afternoon "
         if afternoon_influence > 0.0:
             time_text += "increases by " + str(afternoon_influence) + ".\n"
         else:
             time_text += "decreases by " + str(-1*afternoon_influence) + ".\n"
-        time_text += "The confidence of the prediction if it is in the evening "
+        time_text += "The mean confidence of the prediction if it is in the evening "
         if evening_influence > 0.0:
             time_text += "increases by " + str(evening_influence) + ".\n"
         else:
@@ -146,20 +234,20 @@ def generate_text(predicted_movements, influential_movements,time_influence):
         # time_text = time_text[:-2]
         # time_text += "]"
 
-        text += f"Time influence: {time_text}"
+        text += f"Time influence: The current time is {curr_time_semantic_txt}. {time_text}"
         
-        gpt_explanations += gpt_explainer.request(text)+'\n\n'
+        gpt_explained_txt = gpt_explainer.request(text)
+        gpt_explanations += gpt_explained_txt +'\n\n'
         
-        raw_exp_text += text
-        raw_exp_text += "\n\n"
-        print("time_influence:",time_influence[key])
-        print("int_to_time:",int_to_time)
+        raw_exp_text += text + '\n\n GPT Explanation: ' + gpt_explained_txt + "\n\n"
+        # print("time_influence:",time_influeence[key])
+        # print("int_to_time:",int_to_time)
         # print(predicted)
         # raise NotImplementedError  # Remove this line and implement the function
 
-        
-    full_text = raw_exp_text + "\n\n" + gpt_explanations[:-1]
-        
+    
+    # full_text = curr_graph_text + "\n\n" + raw_exp_text #+ "\n\n" + gpt_explanations[:-1]
+    full_text = raw_exp_text #+ "\n\n" + gpt_explanations[:-1]
     return full_text
 
 def plot_collapsible_tree(graph_data):
@@ -217,6 +305,8 @@ def main():
     text_to_display = "Please select a log file first."
     if selected_log:
         log_data = load_log(selected_log)
+        # print("log_data: ", log_data[4])
+        # raise NotImplementedError
         
         # Extract adjacency matrix from log data (assuming it's the first element)
         if isinstance(log_data, list) and len(log_data) > 0:
@@ -229,13 +319,13 @@ def main():
                 st.error("Unexpected data format in log file.")
         else:
             st.error("Log file is empty or improperly formatted.")
-        text_to_display = generate_text(log_data[1],log_data[2],log_data[3])
+        text_to_display = generate_text(log_data[0],log_data[1],log_data[2],log_data[3],log_data[4])
     
     # Placeholder text area
     # st.text_area("Analysis Notes", "Enter your observations here...")
     st.markdown("Explanation")
-    
-    st.markdown(text_to_display)
+    text_to_display_md = convert_to_markdown(text_to_display)
+    st.markdown(text_to_display_md)
 
 if __name__ == "__main__":
     main()

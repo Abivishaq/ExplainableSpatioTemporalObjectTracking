@@ -333,7 +333,7 @@ class Explainer:
 
 
         print("time_influence", time_influence)
-        data = [curr_graph, predicted_changes, influential_movements, time_influence]
+        data = [curr_graph, predicted_changes, influential_movements, time_influence, true_time]
         self.logger.log(data)
         # raise NotImplementedError
         # time perturbations:
@@ -357,7 +357,7 @@ class Explainer:
 
             # loop through routine
             historic_movements = {}
-            print("routine_length", routine_length)
+
             for step in range(routine_length):
                 
                 routines_in_window = [test_routines.collate_fn([day_routine[j]]) for j in range(step, min(step+self.lookahead_steps, routine_length))]
