@@ -22,6 +22,8 @@ def analyze_routine_in_window(routines_in_window):
     print("type", type(routines_in_window))
     raise NotImplementedError
 
+def assert_not_tensor(x, name="variable"):
+    assert not isinstance(x, torch.Tensor), f"{name} should not be a torch.Tensor"
 
 class Logger:
     def __init__(self):
@@ -58,7 +60,7 @@ class Explainer:
         train_days = 30
         time_options = TimeEncodingOptions(cfg['DATA_INFO']['weeekend_days'] if 'weeekend_days' in cfg['DATA_INFO'].keys() else None)
         time_encoding = time_options(cfg['time_encoding'])
-        self.logger = Logger()
+        # self.logger = Logger()
         self.time_encoding = time_encoding
 
         data_dir = 'data/HOMER/household0/'
@@ -75,6 +77,8 @@ class Explainer:
         self.lookahead_steps = 1
         self.num_nodes = 108
         self.node_name = torch.load("node_classes.pt")
+    
+    
     
     def label_coding(self, onehot_tensor):
         assert len(onehot_tensor.shape) == 3
@@ -118,6 +122,8 @@ class Explainer:
         diff = edges_unonehot - prev_edges_unonehot
         movement_inds = torch.nonzero(diff).squeeze(1)
         movement_inds = movement_inds.tolist()
+        for mov in movement_inds:
+            assert_not_tensor(mov, "movement index")
         movement_detected = len(movement_inds) > 0
         movements = torch.stack((prev_edges_unonehot, edges_unonehot))
         assert movements.shape[0] == 2
@@ -200,6 +206,7 @@ class Explainer:
 
     def add_movements(self, true_movements, movement_inds, movements, step):
         for ind in movement_inds:
+            assert_not_tensor(ind, "movement index")
             if ind not in true_movements.keys():
                 true_movements[ind] = []
             if movements[0,ind] not in true_movements[ind]:
@@ -268,7 +275,10 @@ class Explainer:
             # print("num_of_historic_movements", len(historic_movements.keys()))
             # print("num_of_pred_movements", len(pred_movements.keys()))
             # chg_ind = mov
+            assert_not_tensor(chg_ind, "change index")
             predicted_changes[chg_ind] = [curr_transitions[0,chg_ind], curr_transitions[1,chg_ind]]
+            assert_not_tensor(curr_transitions[0,chg_ind], "current transition")
+            assert_not_tensor(curr_transitions[1,chg_ind], "predicted transition")
             influential_movements[chg_ind] = []
             time_influence[chg_ind] = [[],[]]
 
@@ -334,7 +344,7 @@ class Explainer:
 
         print("time_influence", time_influence)
         data = [curr_graph, predicted_changes, influential_movements, time_influence, true_time]
-        self.logger.log(data)
+        # self.logger.log(data)
         # raise NotImplementedError
         # time perturbations:
         

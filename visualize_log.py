@@ -6,12 +6,14 @@ import os
 import tempfile
 from helpers.encoders import time_external
 from GPT_explainer import GPTExplainer
+from scene_context_builder import SceneContextExtractor
 
 node_name = torch.load("node_classes.pt")
 node_name[80] = "lemonade"
 node_name[81] = "juice_glass"
 
 gpt_explainer = GPTExplainer()
+
 def convert_to_markdown(data):
     i=0
     while(True):
@@ -81,13 +83,31 @@ def get_active_nodes(predicted_movements, influential_movements,key):
     for influential_movement in influential_movements[key]:
         active_nodes.append(influential_movement[0])
         active_nodes.append(influential_movement[1])
+    cleaned_active_nodes = []
+    for node in active_nodes:
+        if type(node) == torch.Tensor:
+            node = node.item()
+        cleaned_active_nodes.append(node)
+    active_nodes = cleaned_active_nodes
     active_nodes = list(set(active_nodes))
     return active_nodes
 
 def summarized_curr_graph_to_text(curr_graph, predicted_movements, influential_movements,key):
     active_nodes = get_active_nodes(predicted_movements, influential_movements,key)
-    parents_and_children = get_parents_and_children(curr_graph, active_nodes)
-    curr_graph_txt = edges_to_text(parents_and_children)
+    curr_graph_list = curr_graph.tolist()
+    ## DEBUG#####################
+    for i in active_nodes:
+        print("active_nodes: ", node_name[i])
+
+    #######################
+    print("creating scene context extractor")
+    sce = SceneContextExtractor(curr_graph_list, node_name, active_nodes)
+    print("Extracted scene context")
+    curr_graph_txt = sce.get_tree_string()
+    print("curr_graph_txt: ", curr_graph_txt)
+    raise NotImplementedError
+    # parents_and_children = get_parents_and_children(curr_graph, active_nodes)
+    # curr_graph_txt = edges_to_text(parents_and_children)
     return curr_graph_txt
 
 def curr_graph_to_text(curr_graph):
@@ -133,9 +153,15 @@ def generate_text(curr_graph, predicted_movements, influential_movements,time_in
     # raise NotImplementedError
 
     for key in keys:
+        active_nodes_for_context = [key]
+        active_nodes_for_context.append(predicted_movements[key][0].item())
+        active_nodes_for_context.append(predicted_movements[key][1].item())
         predicted = predicted_movements[key]
-        summarized_cg_txt = "The current state: \n" + summarized_curr_graph_to_text(curr_graph, predicted_movements, influential_movements,key)
-        text = summarized_cg_txt + f"I predict that {node_name[key]} moves from {node_name[predicted[0].item()]} to  {node_name[predicted[1].item()]}. "
+        # summarized_cg_txt = "The current state: \n" + summarized_curr_graph_to_text(curr_graph, predicted_movements, influential_movements,key)
+        # text = summarized_cg_txt + f"\n\nI predict that {node_name[key]} moves from {node_name[predicted[0].item()]} to  {node_name[predicted[1].item()]}. "
+        
+        text =  f"\n\nI predict that {node_name[key]} moves from {node_name[predicted[0].item()]} to  {node_name[predicted[1].item()]}. "
+        
         confidences = []
         influential_movements[key] = sorted(influential_movements[key], key=lambda x: x[3].item(), reverse=True)
         
@@ -150,6 +176,7 @@ def generate_text(curr_graph, predicted_movements, influential_movements,time_in
             for influential_movement in influential_movements[key]:
                 if influential_movement[3] < threshold:
                     continue
+
                 # print(influential_movement)
                 # raise NotImplementedError
                 # text += f"{node_name[influential_movement[0]]} moved from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2].item()]} (conf: {influential_movement[3]}) ---and---\n"
@@ -160,6 +187,13 @@ def generate_text(curr_graph, predicted_movements, influential_movements,time_in
                 # text += f"{node_name[influential_movement[0]]} moving from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2].item()]} (conf: {influential_movement[3]}) ---and---\n"
                 if type(influential_movement[3]) == torch.Tensor:
                     influential_movement[3] = influential_movement[3].item()
+                print(type(influential_movement[0]))
+                print(type(influential_movement[1]))
+                print(type(influential_movement[2]))
+                raise NotImplementedError
+                active_nodes_for_context.append(influential_movement[0])
+                active_nodes_for_context.append(influential_movement[1].item())
+                active_nodes_for_context.append(influential_movement[2].item())
                 text += f"My prediction confidence reduces by {round(influential_movement[3], 2)} if {node_name[influential_movement[0]]} did not move from {node_name[influential_movement[1]]} to {node_name[influential_movement[2]]}.\n"
         if text[-10:] == "---and---\n":
             text = text[:-10]
