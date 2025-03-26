@@ -1,9 +1,5 @@
 import torch
 
-
-
-from collections import defaultdict
-
 from collections import defaultdict
 
 class SceneContextExtractor:
@@ -122,6 +118,41 @@ class SceneContextExtractor:
             lines.extend(self._build_tree_string(child, "", is_last))
 
         return "\n".join(lines)
+    
+    def get_ordered_leaf_active_paths(self):
+        """
+        Returns only deepest active paths (skip parent if child is active).
+        """
+        paths = []
+
+        def dfs(node, path_so_far):
+            path_so_far.append(self.names[node])
+            children = self.tree.get(node, [])
+
+            # Recurse first
+            child_has_active = False
+            for child in children:
+                if self._subtree_has_active(child):
+                    dfs(child, path_so_far[:])
+                    child_has_active = True
+
+            # If current is active and no active children: it's a leaf-active path
+            if node in self.active_nodes and not child_has_active:
+                paths.append(" > ".join(path_so_far))
+
+        dfs(self.root, [])
+        str_paths = ""
+        for path in paths:
+            str_paths+=path+"\n"
+        return str_paths
+        # return paths
+    def _subtree_has_active(self, node):
+        """
+        Helper to check if the current node or any of its descendants is in active_nodes.
+        """
+        if node in self.active_nodes:
+            return True
+        return any(self._subtree_has_active(child) for child in self.tree.get(node, []))
 
 
 # class SceneContextExtractor:
@@ -233,4 +264,5 @@ if __name__=="__main__":
         
     
     sce.visualize()
-    
+    pths = sce.get_ordered_leaf_active_paths()
+    print(pths)

@@ -60,7 +60,7 @@ class Explainer:
         train_days = 30
         time_options = TimeEncodingOptions(cfg['DATA_INFO']['weeekend_days'] if 'weeekend_days' in cfg['DATA_INFO'].keys() else None)
         time_encoding = time_options(cfg['time_encoding'])
-        # self.logger = Logger()
+        self.logger = Logger()
         self.time_encoding = time_encoding
 
         data_dir = 'data/HOMER/household0/'
@@ -122,8 +122,8 @@ class Explainer:
         diff = edges_unonehot - prev_edges_unonehot
         movement_inds = torch.nonzero(diff).squeeze(1)
         movement_inds = movement_inds.tolist()
-        for mov in movement_inds:
-            assert_not_tensor(mov, "movement index")
+        # for mov in movement_inds:
+        #     assert_not_tensor(mov, "movement index")
         movement_detected = len(movement_inds) > 0
         movements = torch.stack((prev_edges_unonehot, edges_unonehot))
         assert movements.shape[0] == 2
@@ -210,7 +210,8 @@ class Explainer:
             if ind not in true_movements.keys():
                 true_movements[ind] = []
             if movements[0,ind] not in true_movements[ind]:
-                true_movements[ind].append(movements[0,ind])
+                true_movements[ind].append(movements[0,ind].item())
+                assert_not_tensor(true_movements[ind][-1], "movement index")
 
 
     def detect_pred_diff(self, pred_true, pred, movement_mask):
@@ -276,12 +277,11 @@ class Explainer:
             # print("num_of_pred_movements", len(pred_movements.keys()))
             # chg_ind = mov
             assert_not_tensor(chg_ind, "change index")
-            predicted_changes[chg_ind] = [curr_transitions[0,chg_ind], curr_transitions[1,chg_ind]]
-            assert_not_tensor(curr_transitions[0,chg_ind], "current transition")
-            assert_not_tensor(curr_transitions[1,chg_ind], "predicted transition")
+            predicted_changes[chg_ind] = [curr_transitions[0,chg_ind].item(), curr_transitions[1,chg_ind].item()]
+            assert_not_tensor(predicted_changes[chg_ind][0], "current transition")
+            assert_not_tensor(predicted_changes[chg_ind][1], "predicted transition")
             influential_movements[chg_ind] = []
             time_influence[chg_ind] = [[],[]]
-
 
             # Time perturbations
             tmp_time = curr_routine_window[0]['time'].clone()
@@ -314,8 +314,10 @@ class Explainer:
             # # Movement perturbations
 
             for obj in historic_movements.keys():
+                assert_not_tensor(obj, "object index")
                 tmp = curr_routine_window[0]['edges'][0,obj,:].clone()
                 obj_curr_pos = torch.argmax(tmp).item()
+                assert_not_tensor(obj_curr_pos, "object current position")
                 # print("obj_curr_pos", obj_curr_pos)
                 # raise NotImplementedError
                 # curr_routine['edges'][0,obj,:] = self.onehot(curr_transitions[1,chg_ind])
@@ -330,9 +332,17 @@ class Explainer:
                     # if(pred_true[mov]  == pred[mov]):
                     if True: ### TODO: Is no filtering fine?
                         influence_level = pred_prob[0,chg_ind,pred_true[chg_ind]] - out_probs[0,chg_ind,pred_true[chg_ind]]
+                        influence_level = influence_level.item()
                         # influence_level = pred_prob[0,chg_ind,:].max() - out_probs[0,chg_ind,:].max()
 
                         influential_movements[chg_ind].append([obj, obj_mov, obj_curr_pos, influence_level, pred_prob[0,chg_ind,:], out_probs[0,chg_ind,:]])
+                        assert_not_tensor(obj, "influential object index")
+                        assert_not_tensor(obj_mov, "influential object movement")
+                        assert_not_tensor(obj_curr_pos, "influential object current position")
+                        assert_not_tensor(influence_level, "influence level")
+                        # assert_not_tensor(influential_movements[4], "predicted probabilities")
+                        # assert_not_tensor(influential_movements[5], "output probabilities")
+        
                 curr_routine_window[0]['edges'][0,obj,:] = tmp
             # for obj in pred_movements.keys():
             #     raise ValueError("Logic error: pred movements should not be considered!!!")
@@ -344,7 +354,7 @@ class Explainer:
 
         print("time_influence", time_influence)
         data = [curr_graph, predicted_changes, influential_movements, time_influence, true_time]
-        # self.logger.log(data)
+        self.logger.log(data)
         # raise NotImplementedError
         # time perturbations:
         
