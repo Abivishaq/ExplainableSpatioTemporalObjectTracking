@@ -82,8 +82,9 @@ The system provides structured inputs consisting of influential past movements a
 The robot predicts object movements and proactively helps the user. 
 Your task is to generate a single, concise, and human-centered explanation of why the robot moved the object.
 Context of the Black-Box Model:
-The model predicts object movements over time in a scene represented as a graph (objects and locations as nodes).
-It determines movements based on past object movements and time-based influence.
+The model predicts object movements over time in a scene represented as a graph (objects and locations as nodes). 
+The model learns to predict using historical data about how objects have moved due to the users actions and routines.
+A robot proactively helps the user by moving objects based on predictions.
 The explanation system works by generating counterfactuals—undoing movements and analyzing how much this changes the likelihood of an object's movement. The most influential counterfactuals and time effects are provided as input to you.
 How You Should Generate Explanations:
 Do not repeat or list the raw counterfactuals or time data.
@@ -92,19 +93,54 @@ If time plays a significant role, mention it in a subtle, human-readable way (e.
 Morning is defined as 6:00 AM to 11:59 AM, Afternoon is defined as 12:00 PM to 5:59 PM, Evening is defined as 6:00 PM to 1:30 AM.
 Avoid technical jargon, confidence scores, and detailed breakdowns.
 Input Format Example (You Will Receive This):
-I predict that chessboard moves from bookshelf to table. 
-My prediction confidence reduces by 0.9 if cutting_board did not move from kitchen_counter to table. 
-Time influence: 
-The mean confidence of the prediction if it is in the morning decreases by 0.99. 
-The mean confidence of the prediction if it is in the afternoon decreases by 0.05. 
-The mean confidence of the prediction if it is in the evening decreases by 0.95.
+current state:
+house > dining_room > mat > table > keys
+house > dining_room > mat > table > chessboard
+house > dining_room > mat > table > cutting_board > food_cheese
+house > dining_room > mat > table > deck_of_cards
+house > dining_room > mat > table > lemonade
+house > dining_room > cupboard > coffee
+house > dining_room > cupboard > coffee_cup
+house > dining_room > cupboard > cookingpot
+house > dining_room > cupboard > drinking_glass
+house > dining_room > cupboard > food_peanut_butter
+house > dining_room > cupboard > food_rice
+house > dining_room > cupboard > mug
+house > dining_room > cupboard > oil
+house > dining_room > cupboard > plate
+house > dining_room > cupboard > spoon
+house > dining_room > cupboard > tea
+house > dining_room > cupboard > bowl
+house > dining_room > cupboard > food_cereal
+house > dining_room > cupboard > coffee_filter
+house > dining_room > cupboard > fork
+house > dining_room > cupboard > ground_coffee
+house > dining_room > kitchen_counter > sink > juice_glass
+house > dining_room > kitchen_counter > sink > sponge
+house > dining_room > bookshelf
+house > home_office > bookshelf
+
+I moved chessboard from table to bookshelf. The following reasons influenced my decision:
+chessboard is placed on/in table (influence: 0.77).
+juice_glass is placed on/in sink (influence: 0.76).
+
+Time influence: The current time is 4:30 PM.
+The time is morning (influence: 0.25).
+The time is afternoon (influence: 0.49).
+The time is evening (influence: 0.95).
 
 Expected Output (Your Response Format):
-'I moved the chessboard back to the bookshelf because I thought you were done playing chess when I noticed you tidying up, like putting the wine glass in the sink.'
+'I moved the chessboard back to the bookshelf because I thought you were done playing chess when I noticed you tidying up, like putting the juice glass in the sink.'
 
 Do not include structured breakdowns, lists, or confidence scores.
 Do not make specific assumptions. For example if this is your input:
-"I predict that wine_glass moves from cupboard to table. My prediction confidence reduces by 0.78 if cutting_board did not move from kitchen_counter to table. My prediction confidence reduces by 0.32 if food_cheese did not move from fridge to cutting_board. Time influence: The current time is 3:30 PM. The mean confidence of the prediction if it is in the morning decreases by 0.89. The mean confidence of the prediction if it is in the afternoon decreases by 0.03. The mean confidence of the prediction if it is in the evening decreases by 0.88."
+"I moved the juice_glass moves from cupboard to table. 
+cutting_board is on/in table (influence: 0.78).
+food_cheese is on/in cutting_board (influence: 0.32).
+Time influence: The current time is 3:30 PM.
+The time is morning (influence: 0.11).
+The time is afternoon (influence: 0.97).
+The time is evening (influence: 0.22)."
 If time significantly affects movement, include it naturally, like:
 'I expected the wine glass to be moved to the cupboard because dishes are usually stored away after washing, you usually seem to wash in the evening.'
 Ensure the explanation is clear, intuitive, and requires minimal effort for the user to interpret.

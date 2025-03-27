@@ -77,27 +77,35 @@ def edges_to_text(edges):
 
     return context
 
-def get_active_nodes(predicted_movements, influential_movements,key):
-    active_nodes = []
+# def get_active_nodes(predicted_movements, influential_movements,key):
+#     active_nodes = []
     
-    active_nodes.append(key)
-    active_nodes.append(predicted_movements[key][0])
-    active_nodes.append(predicted_movements[key][1])
-    for influential_movement in influential_movements[key]:
-        active_nodes.append(influential_movement[0])
-        active_nodes.append(influential_movement[1])
-    cleaned_active_nodes = []
-    for node in active_nodes:
-        if type(node) == torch.Tensor:
-            node = node.item()
-        cleaned_active_nodes.append(node)
-    active_nodes = cleaned_active_nodes
+#     active_nodes.append(key)
+#     active_nodes.append(predicted_movements[key][0])
+#     active_nodes.append(predicted_movements[key][1])
+#     for influential_movement in influential_movements[key]:
+#         active_nodes.append(influential_movement[0])
+#         active_nodes.append(influential_movement[1])
+#     cleaned_active_nodes = []
+#     for node in active_nodes:
+#         if type(node) == torch.Tensor:
+#             node = node.item()
+#         cleaned_active_nodes.append(node)
+#     active_nodes = cleaned_active_nodes
+#     active_nodes = list(set(active_nodes))
+#     return active_nodes
+
+def add_children_to_active_nodes(curr_graph, active_nodes):
+    for active_node in active_nodes:
+        children = torch.nonzero(curr_graph == active_node, as_tuple=False).flatten().tolist()
+        active_nodes.extend(children)
     active_nodes = list(set(active_nodes))
-    return active_nodes
+
 
 def summarized_curr_graph_to_text(curr_graph, active_nodes):
     # active_nodes = get_active_nodes(predicted_movements, influential_movements,key)
     curr_graph_list = curr_graph.tolist()
+    add_children_to_active_nodes(curr_graph, active_nodes)
     ## DEBUG#####################
     for i in active_nodes:
         print("active_nodes: ", node_name[i])
@@ -166,7 +174,7 @@ def generate_text(curr_graph, predicted_movements, influential_movements,time_in
         # summarized_cg_txt = "The current state: \n" + summarized_curr_graph_to_text(curr_graph, predicted_movements, influential_movements,key)
         # text = summarized_cg_txt + f"\n\nI predict that {node_name[key]} moves from {node_name[predicted[0].item()]} to  {node_name[predicted[1].item()]}. "
         
-        text =  f"\n\nI predict that {node_name[key]} moves from {node_name[predicted[0]]} to  {node_name[predicted[1]]}. "
+        text =  f"\n\nI moved {node_name[key]} from {node_name[predicted[0]]} to  {node_name[predicted[1]]}. The following reasons influenced my decision: \n"
         
         confidences = []
         influential_movements[key] = sorted(influential_movements[key], key=lambda x: x[3], reverse=True)
@@ -180,10 +188,15 @@ def generate_text(curr_graph, predicted_movements, influential_movements,time_in
         if no_candidates != 0:
             threshold = 0.2 #confidences[no_candidates-1]
             # threshold = max(0.5, threshold)
+            filtered_influential_movements = {}
             for influential_movement in influential_movements[key]:
                 if influential_movement[3] < threshold:
                     continue
-
+                if influential_movement[0] not in filtered_influential_movements:
+                    filtered_influential_movements[influential_movement[0]] = [influential_movement[2], influential_movement[3]]
+                else:
+                    if influential_movement[3] > filtered_influential_movements[influential_movement[0]][1]:
+                        filtered_influential_movements[influential_movement[0]] = [influential_movement[2], influential_movement[3]]
                 # print(influential_movement)
                 # raise NotImplementedError
                 # text += f"{node_name[influential_movement[0]]} moved from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2].item()]} (conf: {influential_movement[3]}) ---and---\n"
@@ -201,11 +214,15 @@ def generate_text(curr_graph, predicted_movements, influential_movements,time_in
                 active_nodes_for_context.append(influential_movement[0])
                 active_nodes_for_context.append(influential_movement[1])
                 active_nodes_for_context.append(influential_movement[2])
-                text += f"My prediction confidence reduces by {round(influential_movement[3], 2)} if {node_name[influential_movement[0]]} did not move from {node_name[influential_movement[1]]} to {node_name[influential_movement[2]]}.\n"
-        if text[-10:] == "---and---\n":
-            text = text[:-10]
-        elif text[-13:] == "- because, --":
-            text = text[:-14]
+                # text += f"My prediction confidence reduces by {round(influential_movement[3], 2)} if {node_name[influential_movement[0]]} did not move from {node_name[influential_movement[1]]} to {node_name[influential_movement[2]]}.\n"
+            for key__, value__ in filtered_influential_movements.items():
+                # text += f"My prediction confidence reduces by {round(value[1], 2)} if {node_name[key]} did not move from {node_name[key]} to {node_name[value[0]}.\n"
+                text += f"{node_name[key__]} is placed on/in {node_name[value__[0]]} (influence: {round(value__[1], 2)}).\n"
+
+        # if text[-10:] == "---and---\n":
+        #     text = text[:-10]
+        # elif text[-13:] == "- because, --":
+        #     text = text[:-14]
         ## Get current graph text
         curr_graph_text = summarized_curr_graph_to_text(curr_graph, active_nodes_for_context)
         text = "current state:\n"+curr_graph_text + "\n\n" + text
@@ -229,7 +246,7 @@ def generate_text(curr_graph, predicted_movements, influential_movements,time_in
         morning_influence = morning_influence[morning_influence > morning_mean - 2*morning_std]
         morning_influence = morning_influence[morning_influence < morning_mean + 2*morning_std]
         morning_influence = torch.mean(morning_influence).item()
-        morning_influence = round(morning_influence, 2)
+        morning_influence = round(1+morning_influence, 2)
 
         # Afternoon:
         afternoon_mean = torch.mean(afternoon_influence)
@@ -237,7 +254,7 @@ def generate_text(curr_graph, predicted_movements, influential_movements,time_in
         afternoon_influence = afternoon_influence[afternoon_influence > afternoon_mean - 2*afternoon_std]
         afternoon_influence = afternoon_influence[afternoon_influence < afternoon_mean + 2*afternoon_std]
         afternoon_influence = torch.mean(afternoon_influence).item()
-        afternoon_influence = round(afternoon_influence, 2)
+        afternoon_influence = round(1+afternoon_influence, 2)
         
         # Evening:
         evening_mean = torch.mean(evening_influence)
@@ -245,23 +262,27 @@ def generate_text(curr_graph, predicted_movements, influential_movements,time_in
         evening_influence = evening_influence[evening_influence > evening_mean - 2*evening_std]
         evening_influence = evening_influence[evening_influence < evening_mean + 2*evening_std]
         evening_influence = torch.mean(evening_influence).item() 
-        evening_influence = round(evening_influence, 2)
+        evening_influence = round(1+evening_influence, 2)
         
-        time_text = "The mean confidence of the prediction if it is in the morning "
-        if morning_influence > 0.0:
-            time_text += "increases by " + str(morning_influence) + ".\n"
-        else:
-            time_text += "decreases by " + str(-1*morning_influence) + ".\n"
-        time_text += "The mean confidence of the prediction if it is in the afternoon "
-        if afternoon_influence > 0.0:
-            time_text += "increases by " + str(afternoon_influence) + ".\n"
-        else:
-            time_text += "decreases by " + str(-1*afternoon_influence) + ".\n"
-        time_text += "The mean confidence of the prediction if it is in the evening "
-        if evening_influence > 0.0:
-            time_text += "increases by " + str(evening_influence) + ".\n"
-        else:
-            time_text += "decreases by " + str(-1*evening_influence) + ".\n"
+        time_text = f"\nThe time is morning (influence: {morning_influence}).\n"
+        time_text += f"The time is afternoon (influence: {afternoon_influence}).\n"
+        time_text += f"The time is evening (influence: {evening_influence}).\n"
+        
+        # time_text = "The mean confidence of the prediction if it is in the morning "
+        # if morning_influence > 0.0:
+        #     time_text += "increases by " + str(morning_influence) + ".\n"
+        # else:
+        #     time_text += "decreases by " + str(-1*morning_influence) + ".\n"
+        # time_text += "The mean confidence of the prediction if it is in the afternoon "
+        # if afternoon_influence > 0.0:
+        #     time_text += "increases by " + str(afternoon_influence) + ".\n"
+        # else:
+        #     time_text += "decreases by " + str(-1*afternoon_influence) + ".\n"
+        # time_text += "The mean confidence of the prediction if it is in the evening "
+        # if evening_influence > 0.0:
+        #     time_text += "increases by " + str(evening_influence) + ".\n"
+        # else:
+        #     time_text += "decreases by " + str(-1*evening_influence) + ".\n"
 
         # time_text = '['
         # for i in range(len(time_influence[key][1])):
@@ -277,7 +298,7 @@ def generate_text(curr_graph, predicted_movements, influential_movements,time_in
         # time_text = time_text[:-2]
         # time_text += "]"
 
-        text += f"Time influence: The current time is {curr_time_semantic_txt}. {time_text}"
+        text += f"\nTime influence: The current time is {curr_time_semantic_txt}. {time_text}"
         
         gpt_explained_txt = gpt_explainer.request(text)
         gpt_explanations += gpt_explained_txt +'\n\n'
