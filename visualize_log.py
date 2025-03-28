@@ -23,7 +23,7 @@ def convert_to_markdown(data):
         if(data[i]=="\n" and not data[i+1]=="\n"):
             if(not data[i-1] == "\n"):
                 data = data[:i] +"  "+data[i:]
-                print(data)
+                # print(data)
                 i+=2
         i+=1
         if i>=len(data)-1:
@@ -77,24 +77,6 @@ def edges_to_text(edges):
 
     return context
 
-# def get_active_nodes(predicted_movements, influential_movements,key):
-#     active_nodes = []
-    
-#     active_nodes.append(key)
-#     active_nodes.append(predicted_movements[key][0])
-#     active_nodes.append(predicted_movements[key][1])
-#     for influential_movement in influential_movements[key]:
-#         active_nodes.append(influential_movement[0])
-#         active_nodes.append(influential_movement[1])
-#     cleaned_active_nodes = []
-#     for node in active_nodes:
-#         if type(node) == torch.Tensor:
-#             node = node.item()
-#         cleaned_active_nodes.append(node)
-#     active_nodes = cleaned_active_nodes
-#     active_nodes = list(set(active_nodes))
-#     return active_nodes
-
 def add_children_to_active_nodes(curr_graph, active_nodes):
     for active_node in active_nodes:
         children = torch.nonzero(curr_graph == active_node, as_tuple=False).flatten().tolist()
@@ -107,45 +89,44 @@ def summarized_curr_graph_to_text(curr_graph, active_nodes):
     curr_graph_list = curr_graph.tolist()
     add_children_to_active_nodes(curr_graph, active_nodes)
     ## DEBUG#####################
-    for i in active_nodes:
-        print("active_nodes: ", node_name[i])
 
     #######################
-    print("creating scene context extractor")
     sce = SceneContextExtractor(curr_graph_list, node_name, active_nodes)
-    print("Extracted scene context")
     curr_graph_txt = sce.get_ordered_leaf_active_paths()
-    print("curr_graph_txt: ", curr_graph_txt)
-    # raise NotImplementedError
-    # parents_and_children = get_parents_and_children(curr_graph, active_nodes)
-    # curr_graph_txt = edges_to_text(parents_and_children)
     return curr_graph_txt
 
 def curr_graph_to_text(curr_graph):
-    print("curr_graph: ", type(curr_graph))
-    print("curr_graph.shape: ", curr_graph.shape)   
-    print("curr_graph: ", curr_graph)
+    
     curr_graph_text = "The current graph of the household is: "
     for i in range(curr_graph.shape[0]):
-        print("node: ", node_name[i],"->", node_name[curr_graph[i]])
         curr_graph_text += node_name[i] +' is connected to '+ node_name[curr_graph[i]] + '.\n'
 
     
     
     return(curr_graph_text)
 
+def get_time_influence_wo_outliers(time_influence_list):
+    if type(time_influence_list) != torch.Tensor:
+        time_influence_list = torch.tensor(time_influence_list)
+    # mean = torch.mean(time_influence_list)
+    # std = torch.std(time_influence_list)
+    # time_influence_list = time_influence_list[time_influence_list > mean - 2*std]
+    # time_influence_list = time_influence_list[time_influence_list < mean + 2*std]
+    time_influence = torch.mean(time_influence_list).item()
+    time_influence = round(1+time_influence, 2)
+    return time_influence
 
-def generate_text(curr_graph, predicted_movements, influential_movements,time_influence, true_time):
-    # predicted movements: {obj1: [curr_pose, pred_pose], obj2: [curr_pose, pred_pose],  .... }
-    # influential_movements: {obj1: [[influential_obj1, old_pose, new_pose],[influential_obj2, old_pose, new_pose], .... ], obj2: [...]}
-    # curr_graph_text = curr_graph_to_text(curr_graph)
-    
+def get_time_text(time_influence,current_time_int,key):
+    current_time_index = int((current_time_int-380)/10)
+    # 0 index is 360
+    #
+    # raise NotImplementedError
+    return(get_time_text_v3(time_influence,current_time_int,key,current_time_index))
 
 
-    keys = predicted_movements.keys()
-    raw_exp_text = ""
-    gpt_explanations = ""
-    curr_time_semantic = time_external(true_time).tolist()
+def get_time_text_v1(time_influence,current_time_int,key,current_time_index):
+
+    curr_time_semantic = time_external(current_time_int).tolist()
     curr_time_semantic_txt = ""
     hours = curr_time_semantic[2]
     minutes = curr_time_semantic[3]
@@ -153,12 +134,200 @@ def generate_text(curr_graph, predicted_movements, influential_movements,time_in
     minutes = int(minutes)
     if hours > 12:
         hours = hours - 12
-        curr_time_semantic_txt = str(hours) + ":" + str(minutes) + " PM"
+        curr_time_semantic_txt = f"{hours:02d}:{minutes:02d} PM"
     else:
-        curr_time_semantic_txt = str(hours) + ":" + str(minutes) + " AM"
+        curr_time_semantic_txt = f"{hours:02d}:{minutes:02d} AM"
+
+     # Add time influence
+    # moring: 6:00 to 12:00 -> 0 to 33
+    # afternoon: 12:00 to 18:00 -> 33 to 69
+    # evening: 18:00 to 25:30 -> 69 to 108
+
+    morning_influence_list = torch.tensor(time_influence[key][1][0:33])
+    afternoon_influence_list = torch.tensor(time_influence[key][1][33:69])
+    evening_influence_list = torch.tensor(time_influence[key][1][69:108])
     
+
+    # Filtering:
+    # Morning:
+    # print("morning_influence: ", morning_influence)
+    morning_influence = get_time_influence_wo_outliers(morning_influence_list)
+
+    # Afternoon:
+    afternoon_influence = get_time_influence_wo_outliers(afternoon_influence_list)
+    
+    # Evening:
+    evening_influence = get_time_influence_wo_outliers(evening_influence_list)
+    
+    
+    time_text = f"\nThe current time is {curr_time_semantic_txt}"
+    time_text += f"\nThe following facts about time influenced my decision and each fact's importance is mentioned in (): \n"
+    time_text += f"It is morning (influence: {morning_influence}).\n"
+    time_text += f"It is afternoon (influence: {afternoon_influence}).\n"
+    time_text += f"It is evening (influence: {evening_influence}).\n"
+    return time_text
+
+def get_time_text_v2(time_influence,current_time_int,key,current_time_index):
+    curr_time_semantic = time_external(current_time_int).tolist()
+    curr_time_semantic_txt = ""
+    hours = curr_time_semantic[2]
+    minutes = curr_time_semantic[3]
+    hours = int(hours)
+    minutes = int(minutes)
+    if hours > 12:
+        hours = hours - 12
+        curr_time_semantic_txt = f"{hours:02d}:{minutes:02d} PM"
+    else:
+        curr_time_semantic_txt = f"{hours:02d}:{minutes:02d} AM"
+
+    # Add time influence
+    # moring: 6:00 to 12:00 -> 0 to 33
+    # afternoon: 12:00 to 18:00 -> 33 to 69
+    # evening: 18:00 to 25:30 -> 69 to 108
+
+    morning_influence_list = torch.tensor(time_influence[key][1][0:33])
+    afternoon_influence_list = torch.tensor(time_influence[key][1][33:69])
+    evening_influence_list = torch.tensor(time_influence[key][1][69:108])
+
+
+    # Filtering:
+    # Morning:
+    # print("morning_influence: ", morning_influence)
+    morning_influence = get_time_influence_wo_outliers(morning_influence_list)
+
+    # Afternoon:
+    afternoon_influence = get_time_influence_wo_outliers(afternoon_influence_list)
+
+    # Evening:
+    evening_influence = get_time_influence_wo_outliers(evening_influence_list)
+
+    # checking if the time is morning, afternoon or evening
+    if current_time_index >= 0 and current_time_index < 33:
+        is_morning = True
+        is_afternoon = False
+        is_evening = False
+    elif current_time_index >= 33 and current_time_index < 69:
+        is_morning = False
+        is_afternoon = True
+        is_evening = False
+    else:
+        is_morning = False
+        is_afternoon = False
+        is_evening = True
+
+    time_text = f"\nThe current time is {curr_time_semantic_txt}"
+    time_text += f"\nThe following facts about time influenced my decision and each fact's importance is mentioned in (): \n"
+    if is_morning:
+        time_text += f"It is morning (influence: {morning_influence}).\n"
+    else:
+        time_text += f"It is NOT morning (influence: {round(1- morning_influence,2)}).\n"
+    if is_afternoon:
+        time_text += f"It is afternoon (influence: {afternoon_influence}).\n"
+    else:
+        time_text += f"It is NOT afternoon (influence: {round(1- afternoon_influence,2)}).\n"
+    if is_evening:
+        time_text += f"It is evening (influence: {evening_influence}).\n"
+    else:
+        time_text += f"It is NOT evening (influence: {round(1- evening_influence,2)}).\n"
+    return time_text
+
+def get_time_text_v3(time_influence,current_time_int,key,current_time_index):
+    curr_time_semantic = time_external(current_time_int).tolist()
+    curr_time_semantic_txt = ""
+    hours = curr_time_semantic[2]
+    minutes = curr_time_semantic[3]
+    hours = int(hours)
+    minutes = int(minutes)
+    if hours > 12:
+        hours = hours - 12
+        curr_time_semantic_txt = f"{hours:02d}:{minutes:02d} PM"
+    else:
+        curr_time_semantic_txt = f"{hours:02d}:{minutes:02d} AM"
+
+    # Add time influence
+    # moring: 6:00 to 12:00 -> 0 to 33
+    # afternoon: 12:00 to 18:00 -> 33 to 69
+    # evening: 18:00 to 25:30 -> 69 to 108
+
+    morning_influence_list = torch.tensor(time_influence[key][1][0:33])
+    afternoon_influence_list = torch.tensor(time_influence[key][1][33:69])
+    evening_influence_list = torch.tensor(time_influence[key][1][69:108])
+
+
+    # Filtering:
+    # Morning:
+    morning_influence = get_time_influence_wo_outliers(morning_influence_list)
+    afternoon_influence = get_time_influence_wo_outliers(afternoon_influence_list)
+    evening_influence = get_time_influence_wo_outliers(evening_influence_list)
+
+    # checking if the time is morning, afternoon or evening
+    if current_time_index >= 0 and current_time_index < 33:
+        is_morning = True
+        is_afternoon = False
+        is_evening = False
+    elif current_time_index >= 33 and current_time_index < 69:
+        is_morning = False
+        is_afternoon = True
+        is_evening = False
+    else:
+        is_morning = False
+        is_afternoon = False
+        is_evening = True
+
+    time_text = f"\nThe current time is {curr_time_semantic_txt}"
+    time_text += f"\nThe following facts about time influenced my decision and each fact's importance is mentioned in (): \n"
+    if is_morning:
+        # time_text += f"It is morning (influence: {morning_influence}).\n"
+        before_time = time_influence[key][1][0:current_time_index]
+        before_time_influence = get_time_influence_wo_outliers(before_time)
+
+        after_time = time_influence[key][1][current_time_index+1:]
+        after_time_influence = get_time_influence_wo_outliers(after_time)
         
+        time_text += f"It is NOT earlier than {curr_time_semantic_txt} (influence: {round(1-before_time_influence,2)}).\n"
+        time_text += f"It is NOT later than {curr_time_semantic_txt} (influence: {round(1- after_time_influence,2)}).\n" 
+    else:
+        time_text += f"It is NOT morning (influence: {1- morning_influence}).\n"
+    if is_afternoon:
+        before_time = time_influence[key][1][33:current_time_index]
+        before_time_influence = get_time_influence_wo_outliers(before_time)
+
+        after_time = time_influence[key][1][current_time_index+1:69]
+        after_time_influence = get_time_influence_wo_outliers(after_time)
+
+        time_text += f"It is NOT earlier than {curr_time_semantic_txt} (influence: {round(1-before_time_influence,2)}).\n"
+        time_text += f"It is NOT later than {curr_time_semantic_txt} (influence: {round(1- after_time_influence,2)}).\n"
+        # before_time_influence
+        print("before_time: ", before_time)
+        print("before_time_influence: ", before_time_influence)
+        print("after_time:", after_time)
+        print("after_time_influence: ", after_time_influence)
+
+    else:
+        time_text += f"It is NOT afternoon (influence: {1- afternoon_influence}).\n"
     
+    if is_evening:
+        before_time = time_influence[key][1][69:current_time_index]
+        before_time_influence = get_time_influence_wo_outliers(before_time)
+
+        after_time = time_influence[key][1][current_time_index+1:]
+        after_time_influence = get_time_influence_wo_outliers(after_time)
+
+        time_text += f"It is NOT earlier than {curr_time_semantic_txt} (influence: {round(1-before_time_influence,2)}).\n"
+        time_text += f"It is NOT later than {curr_time_semantic_txt} (influence: {round(1- after_time_influence,2)}).\n"
+    else:
+        time_text += f"It is NOT evening (influence: {1- evening_influence}).\n"
+    return time_text
+
+
+def generate_text(curr_graph, predicted_movements, influential_movements,time_influence, true_time):
+    # predicted movements: {obj1: [curr_pose, pred_pose], obj2: [curr_pose, pred_pose],  .... }
+    # influential_movements: {obj1: [[influential_obj1, old_pose, new_pose],[influential_obj2, old_pose, new_pose], .... ], obj2: [...]}
+    # curr_graph_text = curr_graph_to_text(curr_graph)
+
+    keys = predicted_movements.keys()
+    raw_exp_text = ""
+    gpt_explanations = ""
     # for key in keys:
     #     print("key: ", key, "len(influential_movements[key]): ", len(influential_movements[key]))
     # raise NotImplementedError
@@ -173,8 +342,8 @@ def generate_text(curr_graph, predicted_movements, influential_movements,time_in
         predicted = predicted_movements[key]
         # summarized_cg_txt = "The current state: \n" + summarized_curr_graph_to_text(curr_graph, predicted_movements, influential_movements,key)
         # text = summarized_cg_txt + f"\n\nI predict that {node_name[key]} moves from {node_name[predicted[0].item()]} to  {node_name[predicted[1].item()]}. "
-        
-        text =  f"\n\nI moved {node_name[key]} from {node_name[predicted[0]]} to  {node_name[predicted[1]]}. The following reasons influenced my decision: \n"
+        action_text =f"**ACTION: I moved {node_name[key]} from {node_name[predicted[0]]} to  {node_name[predicted[1]]}**.\n\n" 
+        text =  f"The following facts about object location influenced my decision and each fact's importance is mentioned in (): \n"
         
         confidences = []
         influential_movements[key] = sorted(influential_movements[key], key=lambda x: x[3], reverse=True)
@@ -225,85 +394,18 @@ def generate_text(curr_graph, predicted_movements, influential_movements,time_in
         #     text = text[:-14]
         ## Get current graph text
         curr_graph_text = summarized_curr_graph_to_text(curr_graph, active_nodes_for_context)
-        text = "current state:\n"+curr_graph_text + "\n\n" + text
+        text = action_text + "The current state of relevant objects are as follows:\n"+curr_graph_text + "\n\n" + text
         # text +="."
         int_to_time = ""
-        # Add time influence
-        # moring: 6:00 to 12:00 -> 0 to 33
-        # afternoon: 12:00 to 18:00 -> 33 to 69
-        # evening: 18:00 to 25:30 -> 69 to 108
+        time_text = get_time_text(time_influence, true_time,key)
 
-        morning_influence = torch.tensor(time_influence[key][1][0:33])
-        afternoon_influence = torch.tensor(time_influence[key][1][33:69])
-        evening_influence = torch.tensor(time_influence[key][1][69:108])
-        
-
-        # Filtering:
-        # Morning:
-        # print("morning_influence: ", morning_influence)
-        morning_mean = torch.mean(morning_influence)
-        morning_std = torch.std(morning_influence)
-        morning_influence = morning_influence[morning_influence > morning_mean - 2*morning_std]
-        morning_influence = morning_influence[morning_influence < morning_mean + 2*morning_std]
-        morning_influence = torch.mean(morning_influence).item()
-        morning_influence = round(1+morning_influence, 2)
-
-        # Afternoon:
-        afternoon_mean = torch.mean(afternoon_influence)
-        afternoon_std = torch.std(afternoon_influence)
-        afternoon_influence = afternoon_influence[afternoon_influence > afternoon_mean - 2*afternoon_std]
-        afternoon_influence = afternoon_influence[afternoon_influence < afternoon_mean + 2*afternoon_std]
-        afternoon_influence = torch.mean(afternoon_influence).item()
-        afternoon_influence = round(1+afternoon_influence, 2)
-        
-        # Evening:
-        evening_mean = torch.mean(evening_influence)
-        evening_std = torch.std(evening_influence)
-        evening_influence = evening_influence[evening_influence > evening_mean - 2*evening_std]
-        evening_influence = evening_influence[evening_influence < evening_mean + 2*evening_std]
-        evening_influence = torch.mean(evening_influence).item() 
-        evening_influence = round(1+evening_influence, 2)
-        
-        time_text = f"\nThe time is morning (influence: {morning_influence}).\n"
-        time_text += f"The time is afternoon (influence: {afternoon_influence}).\n"
-        time_text += f"The time is evening (influence: {evening_influence}).\n"
-        
-        # time_text = "The mean confidence of the prediction if it is in the morning "
-        # if morning_influence > 0.0:
-        #     time_text += "increases by " + str(morning_influence) + ".\n"
-        # else:
-        #     time_text += "decreases by " + str(-1*morning_influence) + ".\n"
-        # time_text += "The mean confidence of the prediction if it is in the afternoon "
-        # if afternoon_influence > 0.0:
-        #     time_text += "increases by " + str(afternoon_influence) + ".\n"
-        # else:
-        #     time_text += "decreases by " + str(-1*afternoon_influence) + ".\n"
-        # time_text += "The mean confidence of the prediction if it is in the evening "
-        # if evening_influence > 0.0:
-        #     time_text += "increases by " + str(evening_influence) + ".\n"
-        # else:
-        #     time_text += "decreases by " + str(-1*evening_influence) + ".\n"
-
-        # time_text = '['
-        # for i in range(len(time_influence[key][1])):
-        #     val_time = time_influence[key][0][i]
-        #     time_semantic = time_external(val_time).tolist()
-        #     # time_semantic_txt = 'week:'+str(int(time_semantic[0]))+'day:'+str(int(time_semantic[1]))+'hours:'+str(int(time_semantic[2]))+'mins:'+str(int(time_semantic[3]))
-        #     time_semantic_txt = str(int(time_semantic[2]))+':'+str(int(time_semantic[3]))
-        #     int_to_time += "("+str(i)+","+time_semantic_txt+","+str(val_time)+"), \n"
-        #     val = time_influence[key][1][i]
-        #     # val to 2 decimal places
-        #     val = round(val, 2
-        #     time_text= time_text + '('+time_semantic_txt+','+str(val) + "),"
-        # time_text = time_text[:-2]
-        # time_text += "]"
-
-        text += f"\nTime influence: The current time is {curr_time_semantic_txt}. {time_text}"
+        text += time_text #f"\nTime influence: The current time is {curr_time_semantic_txt}. {time_text}"
         
         gpt_explained_txt = gpt_explainer.request(text)
         gpt_explanations += gpt_explained_txt +'\n\n'
         
         raw_exp_text += text + '\n\n GPT Explanation: ' + gpt_explained_txt + "\n\n"
+        raw_exp_text += "-------------------------------------------------------------------------------------------------------------------\n\n"
         # print("time_influence:",time_influeence[key])
         # print("int_to_time:",int_to_time)
         # print(predicted)
