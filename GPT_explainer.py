@@ -77,74 +77,7 @@ class GPTExplainer:
 # Summarize insights concisely, making the reasoning clear and intuitive.
 # Frame responses in a human-centered way that reduces cognitive effort for the user.'''
 
-        self.instructions = '''You are an explanation module that interprets the output of an existing counterfactual-based explanation system. 
-The system provides structured inputs consisting of influential past movements and time sensitivity data for why a robot moved an object. 
-The robot predicts object movements and proactively helps the user. 
-Your task is to generate a single, concise, and human-centered explanation of why the robot moved the object.
-Context of the Black-Box Model:
-The model predicts object movements over time in a scene represented as a graph (objects and locations as nodes). 
-The model learns to predict using historical data about how objects have moved due to the users actions and routines.
-A robot proactively helps the user by moving objects based on predictions.
-The explanation system works by generating counterfactuals—undoing movements and analyzing how much this changes the likelihood of an object's movement. The most influential counterfactuals and time effects are provided as input to you.
-How You Should Generate Explanations:
-Do not repeat or list the raw counterfactuals or time data.
-Pick the most relevant influence and describe it in one natural sentence that clearly explains the movement.
-If time plays a significant role, mention it in a subtle, human-readable way (e.g., 'especially later in the day').
-Morning is defined as 6:00 AM to 11:59 AM, Afternoon is defined as 12:00 PM to 5:59 PM, Evening is defined as 6:00 PM to 1:30 AM.
-Avoid technical jargon, confidence scores, and detailed breakdowns.
-Input Format Example (You Will Receive This):
-current state:
-house > dining_room > mat > table > keys
-house > dining_room > mat > table > chessboard
-house > dining_room > mat > table > cutting_board > food_cheese
-house > dining_room > mat > table > deck_of_cards
-house > dining_room > mat > table > lemonade
-house > dining_room > cupboard > coffee
-house > dining_room > cupboard > coffee_cup
-house > dining_room > cupboard > cookingpot
-house > dining_room > cupboard > drinking_glass
-house > dining_room > cupboard > food_peanut_butter
-house > dining_room > cupboard > food_rice
-house > dining_room > cupboard > mug
-house > dining_room > cupboard > oil
-house > dining_room > cupboard > plate
-house > dining_room > cupboard > spoon
-house > dining_room > cupboard > tea
-house > dining_room > cupboard > bowl
-house > dining_room > cupboard > food_cereal
-house > dining_room > cupboard > coffee_filter
-house > dining_room > cupboard > fork
-house > dining_room > cupboard > ground_coffee
-house > dining_room > kitchen_counter > sink > juice_glass
-house > dining_room > kitchen_counter > sink > sponge
-house > dining_room > bookshelf
-house > home_office > bookshelf
-
-I moved chessboard from table to bookshelf. The following reasons influenced my decision:
-chessboard is placed on/in table (influence: 0.77).
-juice_glass is placed on/in sink (influence: 0.76).
-
-Time influence: The current time is 4:30 PM.
-The time is morning (influence: 0.25).
-The time is afternoon (influence: 0.49).
-The time is evening (influence: 0.95).
-
-Expected Output (Your Response Format):
-'I moved the chessboard back to the bookshelf because I thought you were done playing chess when I noticed you tidying up, like putting the juice glass in the sink.'
-
-Do not include structured breakdowns, lists, or confidence scores.
-Do not make specific assumptions. For example if this is your input:
-"I moved the juice_glass moves from cupboard to table. 
-cutting_board is on/in table (influence: 0.78).
-food_cheese is on/in cutting_board (influence: 0.32).
-Time influence: The current time is 3:30 PM.
-The time is morning (influence: 0.11).
-The time is afternoon (influence: 0.97).
-The time is evening (influence: 0.22)."
-If time significantly affects movement, include it naturally, like:
-'I expected the wine glass to be moved to the cupboard because dishes are usually stored away after washing, you usually seem to wash in the evening.'
-Ensure the explanation is clear, intuitive, and requires minimal effort for the user to interpret.
-Always return a single, natural-language sentence per response.'''
+        self.instructions = '''Convert a mechanistic explanation into a human-centered explanation.'''
 
         # self.base_prompt = "This is a base prompt for GPT communication. "
         self.base_prompt = ""
@@ -154,12 +87,43 @@ Always return a single, natural-language sentence per response.'''
         Appends the context to the base prompt and sends it to GPT.
         """
         full_prompt = self.base_prompt + "\n" + context
+        example1_mechanistic_explanation = """ACTION: I moved chessboard from bookshelf to table.
+
+The current state of relevant objects are as follows:
+house > dining_room > mat > table > keys
+house > dining_room > mat > table > cutting_board > food_cheese
+house > dining_room > mat > table > lemonade
+house > dining_room > kitchen_counter > sink > sponge
+house > dining_room > kitchen_counter > stove > sauce_pan
+house > dining_room > kitchen_counter > food_donut
+house > dining_room > kitchen_counter > drying_rack
+house > dining_room > kitchen_counter > dishrack
+house > dining_room > kitchen_counter > dishtowel
+house > dining_room > kitchen_counter > food_apple
+house > dining_room > kitchen_counter > food_bread
+house > dining_room > kitchen_counter > dish_soap
+house > home_office > bookshelf > chessboard
+house > home_office > bookshelf > deck_of_cards
+
+The following facts about object location influenced my decision and each fact's importance is mentioned in ():
+cutting_board is placed on/in table (influence: 0.9).
+
+The current time is 03:30 PM
+The following facts about time influenced my decision and each fact's importance is mentioned in ():
+It is NOT morning (influence: 0.99).
+It is NOT earlier than 03:30 PM (influence: 0.1).
+It is NOT later than 03:30 PM (influence: 0.1).
+It is NOT evening (influence: 0.88).
+"""
+        example1_human_centered_explanation = """I moved the chessboard to the table since you had cheese on the table and you usually play chess while eating in the afternoon."""
         
         response = self.client.chat.completions.create(
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": self.instructions},
-                {"role": "user", "content": full_prompt}
+                {"role": "user", "content": example1_mechanistic_explanation},
+                {"role":"assistant","content":example1_human_centered_explanation},
+                {"role":"user","content":full_prompt}
             ]
         )
         

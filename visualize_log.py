@@ -287,7 +287,7 @@ def get_time_text_v3(time_influence,current_time_int,key,current_time_index):
         time_text += f"It is NOT earlier than {curr_time_semantic_txt} (influence: {round(1-before_time_influence,2)}).\n"
         time_text += f"It is NOT later than {curr_time_semantic_txt} (influence: {round(1- after_time_influence,2)}).\n" 
     else:
-        time_text += f"It is NOT morning (influence: {1- morning_influence}).\n"
+        time_text += f"It is NOT morning (influence: {round(1- morning_influence,2)}).\n"
     if is_afternoon:
         before_time = time_influence[key][1][33:current_time_index]
         before_time_influence = get_time_influence_wo_outliers(before_time)
@@ -304,7 +304,7 @@ def get_time_text_v3(time_influence,current_time_int,key,current_time_index):
         print("after_time_influence: ", after_time_influence)
 
     else:
-        time_text += f"It is NOT afternoon (influence: {1- afternoon_influence}).\n"
+        time_text += f"It is NOT afternoon (influence: {round(1- afternoon_influence,2)}).\n"
     
     if is_evening:
         before_time = time_influence[key][1][69:current_time_index]
@@ -316,7 +316,7 @@ def get_time_text_v3(time_influence,current_time_int,key,current_time_index):
         time_text += f"It is NOT earlier than {curr_time_semantic_txt} (influence: {round(1-before_time_influence,2)}).\n"
         time_text += f"It is NOT later than {curr_time_semantic_txt} (influence: {round(1- after_time_influence,2)}).\n"
     else:
-        time_text += f"It is NOT evening (influence: {1- evening_influence}).\n"
+        time_text += f"It is NOT evening (influence: {round(1- evening_influence,2)}).\n"
     return time_text
 
 
