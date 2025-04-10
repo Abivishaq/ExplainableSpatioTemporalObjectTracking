@@ -121,7 +121,7 @@ def get_time_text(time_influence,current_time_int,key):
     # 0 index is 360
     #
     # raise NotImplementedError
-    return(get_time_text_v3(time_influence,current_time_int,key,current_time_index))
+    return(get_time_text_v2(time_influence,current_time_int,key,current_time_index))
 
 
 def get_time_text_v1(time_influence,current_time_int,key,current_time_index):
@@ -318,7 +318,6 @@ def get_time_text_v3(time_influence,current_time_int,key,current_time_index):
     else:
         time_text += f"It is NOT evening (influence: {round(1- evening_influence,2)}).\n"
     return time_text
-
 
 def generate_text(curr_graph, predicted_movements, influential_movements,time_influence, true_time):
     # predicted movements: {obj1: [curr_pose, pred_pose], obj2: [curr_pose, pred_pose],  .... }

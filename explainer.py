@@ -17,10 +17,7 @@ import numpy as np
 from copy import deepcopy
 import os
 
-def analyze_routine_in_window(routines_in_window):
-    print("Routines in window")
-    print("type", type(routines_in_window))
-    raise NotImplementedError
+
 
 def assert_not_tensor(x, name="variable"):
     assert not isinstance(x, torch.Tensor), f"{name} should not be a torch.Tensor"
@@ -85,15 +82,8 @@ class Explainer:
         assert onehot_tensor.shape[0] == 1
         assert onehot_tensor.shape[2] == self.num_nodes
         assert onehot_tensor.shape[1] == self.num_nodes
-        #print("onehot_tensor_shape", onehot_tensor.shape)
-        # Does the inverse of onehot encoding
-        # raise NotImplementedError
         tnsr = torch.argmax(onehot_tensor, dim=2)
         tnsr = tnsr.squeeze(0)
-        # print("tnsr_shape", tnsr.shape)
-        # raise NotImplementedError
-        # print("tnsr_shape", tnsr.shape)
-        # raise NotImplementedError
         assert len(tnsr.shape) == 1
         assert tnsr.shape[0] == self.num_nodes
         return tnsr
@@ -146,10 +136,6 @@ class Explainer:
         # time: [1]
         # change_type: [1, 108]
         assert len(routines) == steps
-        # print("routines_shape", len(routines))
-        # print("type(routines)", type(routines))
-        # print("routines[0].keys()", routines[0].keys())
-        # raise NotImplementedError
 
         for i, routine in enumerate(routines):
             if i != 0:
@@ -264,13 +250,12 @@ class Explainer:
         # curr_gragh: Adjanency matrix
         # predicted movements: {obj1: [curr_pose, pred_pose], obj2: [curr_pose, pred_pose],  .... }
         # influential_movements: {obj1: [[influential_obj1, old_pose, new_pose],[influential_obj2, old_pose, new_pose], .... ], obj2: [...]}
-        # print("Number of historic movements", len(historic_movements.keys()))
-        # print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+
         curr_graph = self.label_coding(curr_routine_window[0]['edges'])
         predicted_changes = {}
         influential_movements = {}
         time_influence = {}
-        print("True time", curr_routine_window[0]['time'])
+        # print("True time", curr_routine_window[0]['time'])
         true_time = int(curr_routine_window[0]['time'].item())
         for chg_ind in change_inds:
             # print("num_of_historic_movements", len(historic_movements.keys()))
@@ -296,7 +281,7 @@ class Explainer:
                 # pred_ind = 
                 # influence_level = out_probs[0,chg_ind,:].max() - pred_prob[0,chg_ind,:].max()
                 if t == true_time:
-                    print("True influence level", influence_level.item())
+                    # print("True influence level", influence_level.item())
                     # assert influence_level.item() == 0
                     if influence_level.item() != 0:
                         raise ValueError("Error: Something is wrong.")
@@ -352,7 +337,7 @@ class Explainer:
 
 
 
-        print("time_influence", time_influence)
+        # print("time_influence", time_influence)
         data = [curr_graph, predicted_changes, influential_movements, time_influence, true_time]
         self.logger.log(data)
         # raise NotImplementedError
@@ -366,11 +351,14 @@ class Explainer:
         # test routine
         test_routines = self.data.test_routines
         # test routine is of datatype -> <class 'reader.DataSplit'>
-        print(type(test_routines))
+        # print(type(test_routines))
         # raise NotImplementedError
+        day_no = 1
 
         # loop through test_routines
         for (day_routine, additonal_info) in test_routines:
+            print(f'Day {day_no}')
+            day_no += 1
             # About day_routine: probably record of graph through the day
             # day_routine[i] will return:  [prev_edges, prev_nodes, encoded_time, edges, nodes, self.active_edges, tensor(time), change_type]
             routine_length = len(day_routine)
@@ -433,7 +421,7 @@ class Explainer:
 
                 movement_detected, movement_inds, movements = self.detect_movement(curr_step_edge, next_step_edge)
                 if movement_detected:
-                    print(f'Movement occured at step {step}')
+                    # print(f'Movement occured at step {step}')
                     prct_mv_txt = ''
                     for ind in movement_inds:
                         prct_mv_txt += f'{self.node_name[ind]}+({ind}) : {self.node_name[movements[0,ind]]}+({movements[0,ind]}) -> {self.node_name[movements[1,ind]]}+({movements[1,ind]})\n'
@@ -448,7 +436,7 @@ class Explainer:
                         for mv in historic_movements[obj]:
                             hst_mv_str += f'{self.node_name[mv]}+({mv}), '
                         hst_mv_str += '\n'
-                    print(hst_mv_str)
+                    # print(hst_mv_str)
         # run inference on each routine
 
 
