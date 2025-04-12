@@ -315,7 +315,9 @@ class Explainer:
                     # is the movement influential
                     
                     # if(pred_true[mov]  == pred[mov]):
+                    # if out_probs[0,chg_ind,pred_true[chg_ind]]<0.5: ### TODO: Filtering all movements that cause a change in the movement prediciton. Threshold enough? 
                     if True: ### TODO: Is no filtering fine?
+
                         influence_level = pred_prob[0,chg_ind,pred_true[chg_ind]] - out_probs[0,chg_ind,pred_true[chg_ind]]
                         influence_level = influence_level.item()
                         # influence_level = pred_prob[0,chg_ind,:].max() - out_probs[0,chg_ind,:].max()
@@ -345,7 +347,6 @@ class Explainer:
         
         return curr_graph, predicted_changes, influential_movements
 
-        
 
     def infer_runner(self):
         # test routine

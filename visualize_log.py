@@ -7,12 +7,169 @@ import tempfile
 from helpers.encoders import time_external
 from GPT_explainer import GPTExplainer
 from scene_context_builder import SceneContextExtractor
+import matplotlib.pyplot as plt
+import io
+import base64
 
 node_name = torch.load("node_classes.pt")
 node_name[80] = "lemonade"
 node_name[81] = "juice_glass"
 
 gpt_explainer = GPTExplainer()
+
+def create_dummy_plot(time_data) -> str:
+    """
+    Generates a simple dummy Matplotlib plot and returns it
+    as a base64 encoded image embedded in a Markdown string.
+
+    This format is compatible with Streamlit's st.markdown()
+    when unsafe_allow_html=True.
+
+    Returns:
+        str: A Markdown string representing the plot image.
+             Example: "![Dummy Plot](data:image/png;base64,...)"
+    """
+    # 1. Create a dummy plot
+    fig, ax = plt.subplots()
+    x = [1, 2, 3, 4, 5]
+    y = [2, 3, 5, 7, 11] # Some prime numbers for fun
+    ax.plot(x, y, marker='o')
+    ax.set_title("Simple Dummy Plot")
+    ax.set_xlabel("X-axis")
+    ax.set_ylabel("Y-axis")
+    ax.grid(True)
+
+    # 2. Save plot to a BytesIO buffer
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png', bbox_inches='tight')
+    buf.seek(0) # Rewind buffer to the beginning
+
+    # 3. Encode buffer contents as base64
+    image_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+
+    # 4. Close the plot figure to free memory
+    plt.close(fig)
+
+    # 5. Create Markdown string
+    markdown_string = f"![Dummy Plot](data:image/png;base64,{image_base64})"
+
+    return markdown_string
+
+def plot_time_influence_to_markdown(
+    score_list: list,
+    y_label: str = "Score",
+    title: str = "Scores from 6:20 AM to Next Day ~2:00 AM"
+) -> str:
+    """
+    Generates a plot of 118 scores (6:20 AM start, 10-min intervals)
+    with 2-hourly labels and colored backgrounds, using specified font sizes,
+    then returns it as a base64 encoded image embedded in a Markdown string.
+
+    Args:
+        score_list: A list containing exactly 118 numerical score values.
+        y_label: Label for the Y-axis. Defaults to "Score".
+        title: Title for the plot. Used as Alt text in Markdown.
+
+    Returns:
+        str: A Markdown string representing the plot image.
+             Example: "![Plot Title](data:image/png;base64,...)"
+             Ready for use with st.markdown(..., unsafe_allow_html=True).
+
+    Raises:
+        ValueError: If the input list does not contain exactly 118 elements
+                    or if elements are not numeric.
+    """
+    # Define background colors for the regions (can be customized)
+    COLOR_REGION_1 = 'lightblue'       # Indices 0-33
+    COLOR_REGION_2 = 'lightgoldenrodyellow' # Indices 34-69
+    COLOR_REGION_3 = 'lightgrey'       # Indices 70-117
+    BACKGROUND_ALPHA = 0.4             # Transparency for background colors
+
+    # --- Font Size Definitions ---
+    # Adjust these values as needed
+    default_fontsize = 24
+    TITLE_FONTSIZE = default_fontsize
+    AXIS_LABEL_FONTSIZE = default_fontsize
+    TICK_LABEL_FONTSIZE = default_fontsize  # For X and Y axis tick numbers/labels
+    LEGEND_TITLE_FONTSIZE = default_fontsize
+    LEGEND_ITEM_FONTSIZE = default_fontsize
+
+
+    NUM_EXPECTED_ELEMENTS = 118
+
+    # --- Input Validation ---
+    if not isinstance(score_list, list):
+        raise ValueError("Input must be a list.")
+    if len(score_list) != NUM_EXPECTED_ELEMENTS:
+        raise ValueError(f"Input list must contain exactly {NUM_EXPECTED_ELEMENTS} elements, but found {len(score_list)}.")
+    if not all(isinstance(item, (int, float)) for item in score_list):
+         raise ValueError("All elements in the list must be numeric (int or float).")
+
+    # --- Setup Plot ---
+    fig, ax = plt.subplots(figsize=(18, 6))
+
+    try:
+        # --- Add Background Coloring ---
+        ax.axvspan(-0.5, 34, facecolor=COLOR_REGION_1, alpha=BACKGROUND_ALPHA, zorder=0, label='Morning')
+        ax.axvspan(34, 70, facecolor=COLOR_REGION_2, alpha=BACKGROUND_ALPHA, zorder=0, label='Afternoon')
+        ax.axvspan(70, NUM_EXPECTED_ELEMENTS - 0.5, facecolor=COLOR_REGION_3, alpha=BACKGROUND_ALPHA, zorder=0, label='Evening')
+
+        # --- Plot Data ---
+        indices = range(NUM_EXPECTED_ELEMENTS)
+        ax.plot(indices, score_list, marker='.', linestyle='-', zorder=2, color='black', label=y_label)
+
+        # --- Configure X-axis Ticks and Labels ---
+        intervals_per_2_hours = 12
+        first_tick_index = 10
+        first_tick_hour = 8
+        tick_indices = []
+        hour_labels = []
+        current_tick_index = first_tick_index
+        current_hour = first_tick_hour
+        while current_tick_index < NUM_EXPECTED_ELEMENTS:
+            tick_indices.append(current_tick_index)
+            hour_labels.append(f"{current_hour:02d}:00")
+            current_tick_index += intervals_per_2_hours
+            current_hour = (current_hour + 2) % 24
+
+        ax.set_xticks(tick_indices)
+        ax.set_xticklabels(hour_labels, rotation=45, ha='right') # Apply labels *after* setting ticks
+
+        # --- Add Labels, Title, Grid, Legend (with Font Sizes) ---
+        ax.set_xlabel("Time (Approx. 2-Hourly Intervals starting near 8:00 AM)", fontsize=AXIS_LABEL_FONTSIZE) # Set fontsize
+        ax.set_ylabel(y_label, fontsize=AXIS_LABEL_FONTSIZE) # Set fontsize
+        ax.set_title(title, fontsize=TITLE_FONTSIZE) # Set fontsize
+
+        # --- Adjust Tick Label Sizes ---
+        ax.tick_params(axis='x', labelsize=TICK_LABEL_FONTSIZE) # Set x-tick label size
+        ax.tick_params(axis='y', labelsize=TICK_LABEL_FONTSIZE) # Set y-tick label size
+
+        ax.grid(axis='y', linestyle='--', linewidth=0.5, color='gray', zorder=1)
+
+        # --- Set Legend Font Sizes ---
+        ax.legend(
+            title="Index Ranges",
+            loc='upper left',
+            bbox_to_anchor=(1.01, 1),
+            fontsize=LEGEND_ITEM_FONTSIZE,        # Font size for legend items
+            title_fontsize=LEGEND_TITLE_FONTSIZE # Font size for legend title
+        )
+
+        # --- Final Adjustments ---
+        fig.tight_layout(rect=[0, 0, 0.9, 1])
+
+        # --- Convert Plot to Markdown ---
+        buf = io.BytesIO()
+        fig.savefig(buf, format='png', bbox_inches='tight')
+        buf.seek(0)
+        image_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+        alt_text = title.replace('"', '&quot;')
+        markdown_string = f"![{alt_text}](data:image/png;base64,{image_base64})"
+
+        return markdown_string
+
+    finally:
+        plt.close(fig)
 
 def assert_not_tensor(x, name="variable"):
     assert not isinstance(x, torch.Tensor), f"{name} should not be a torch.Tensor"
@@ -108,17 +265,20 @@ def curr_graph_to_text(curr_graph):
 def get_time_influence_wo_outliers(time_influence_list):
     if type(time_influence_list) != torch.Tensor:
         time_influence_list = torch.tensor(time_influence_list)
+    # Note:time influence = perturbation_prob - original_prob
+    
     # mean = torch.mean(time_influence_list)
     # std = torch.std(time_influence_list)
     # time_influence_list = time_influence_list[time_influence_list > mean - 2*std]
     # time_influence_list = time_influence_list[time_influence_list < mean + 2*std]
+
     time_influence = torch.mean(time_influence_list).item()
     time_influence = round(1+time_influence, 2)
     return time_influence
 
 def get_time_text(time_influence,current_time_int,key):
     current_time_index = int((current_time_int-380)/10)
-    # 0 index is 360
+    # 0 index is 380
     #
     # raise NotImplementedError
     return(get_time_text_v2(time_influence,current_time_int,key,current_time_index))
@@ -139,13 +299,13 @@ def get_time_text_v1(time_influence,current_time_int,key,current_time_index):
         curr_time_semantic_txt = f"{hours:02d}:{minutes:02d} AM"
 
      # Add time influence
-    # moring: 6:00 to 12:00 -> 0 to 33
-    # afternoon: 12:00 to 18:00 -> 33 to 69
-    # evening: 18:00 to 25:30 -> 69 to 108
+    # moring: 6:00 to 11:50 -> 0 to 33
+    # afternoon: 12:00 to 17:50 -> 34 to 69
+    # evening: 18:00 to 26:00 -> 70 to 118
 
-    morning_influence_list = torch.tensor(time_influence[key][1][0:33])
-    afternoon_influence_list = torch.tensor(time_influence[key][1][33:69])
-    evening_influence_list = torch.tensor(time_influence[key][1][69:108])
+    morning_influence_list = torch.tensor(time_influence[key][1][0:34])
+    afternoon_influence_list = torch.tensor(time_influence[key][1][34:70])
+    evening_influence_list = torch.tensor(time_influence[key][1][70:118])
     
 
     # Filtering:
@@ -187,7 +347,10 @@ def get_time_text_v2(time_influence,current_time_int,key,current_time_index):
 
     morning_influence_list = torch.tensor(time_influence[key][1][0:33])
     afternoon_influence_list = torch.tensor(time_influence[key][1][33:69])
-    evening_influence_list = torch.tensor(time_influence[key][1][69:108])
+    evening_influence_list = torch.tensor(time_influence[key][1][69:118])
+    print("time_influence_len",len(time_influence[key][1]))
+    # raise NotImplementedError
+    assert len(time_influence[key][1]) == 118, f"len(time_influence[key][1]): {len(time_influence[key][1])} != 118"
 
 
     # Filtering:
@@ -247,11 +410,11 @@ def get_time_text_v3(time_influence,current_time_int,key,current_time_index):
     # Add time influence
     # moring: 6:00 to 12:00 -> 0 to 33
     # afternoon: 12:00 to 18:00 -> 33 to 69
-    # evening: 18:00 to 25:30 -> 69 to 108
+    # evening: 18:00 to 25:30 -> 69 to 118
 
     morning_influence_list = torch.tensor(time_influence[key][1][0:33])
     afternoon_influence_list = torch.tensor(time_influence[key][1][33:69])
-    evening_influence_list = torch.tensor(time_influence[key][1][69:108])
+    evening_influence_list = torch.tensor(time_influence[key][1][69:118])
 
 
     # Filtering:
@@ -321,7 +484,7 @@ def get_time_text_v3(time_influence,current_time_int,key,current_time_index):
 
 def generate_text(curr_graph, predicted_movements, influential_movements,time_influence, true_time):
     # predicted movements: {obj1: [curr_pose, pred_pose], obj2: [curr_pose, pred_pose],  .... }
-    # influential_movements: {obj1: [[influential_obj1, old_pose, new_pose],[influential_obj2, old_pose, new_pose], .... ], obj2: [...]}
+    # influential_movements: {obj1: [[0- influential_obj1, 1- old_pose, 2- new_pose, 3- influence_level, 4- original_prob, 5-perturbed prob],[influential_obj2, old_pose, new_pose,..], .... ], obj2: [...]}
     # curr_graph_text = curr_graph_to_text(curr_graph)
 
     keys = predicted_movements.keys()
@@ -343,54 +506,46 @@ def generate_text(curr_graph, predicted_movements, influential_movements,time_in
         # text = summarized_cg_txt + f"\n\nI predict that {node_name[key]} moves from {node_name[predicted[0].item()]} to  {node_name[predicted[1].item()]}. "
         action_text =f"**ACTION: I moved {node_name[key]} from {node_name[predicted[0]]} to  {node_name[predicted[1]]}**.\n\n" 
         text =  f"The following facts about object location influenced my decision and each fact's importance is mentioned in (): \n"
-        
+        ################################# Sorting based on if pertrubation changes predicted parent ##########################
         confidences = []
         influential_movements[key] = sorted(influential_movements[key], key=lambda x: x[3], reverse=True)
 
         
         for influential_movement in influential_movements[key]:
-            # print("confidences::: ", influential_movement[3].item())
             confidences.append(influential_movement[3])
         confidences = sorted(confidences, reverse=True)
-        no_candidates = min(3, len(confidences))
-        if no_candidates != 0:
-            threshold = 0.2 #confidences[no_candidates-1]
-            # threshold = max(0.5, threshold)
+        # no_candidates = min(3, len(confidences))
+        if True: #no_candidates != 0:
+            # threshold = 0.5
             filtered_influential_movements = {}
             for influential_movement in influential_movements[key]:
-                if influential_movement[3] < threshold:
+                pred_prob = influential_movement[4]
+                perturbed_prob = influential_movement[5]
+                pred_true_ind = torch.argmax(pred_prob)
+                perturbed_ind = torch.argmax(perturbed_prob)
+                recalc_influence = pred_prob[pred_true_ind] - perturbed_prob[pred_true_ind]
+                assert abs(recalc_influence-influential_movement[3]) < 0.0001, f"recalc_influence: {recalc_influence}, influential_movement[3]: {influential_movement[3]}"
+                perturbed_confidence = influential_movement[5][pred_true_ind]
+                # print("influential_movement: ", influential_movement[5])
+                if perturbed_ind == pred_true_ind:
                     continue
                 if influential_movement[0] not in filtered_influential_movements:
                     filtered_influential_movements[influential_movement[0]] = [influential_movement[2], influential_movement[3]]
                 else:
                     if influential_movement[3] > filtered_influential_movements[influential_movement[0]][1]:
                         filtered_influential_movements[influential_movement[0]] = [influential_movement[2], influential_movement[3]]
-                # print(influential_movement)
-                # raise NotImplementedError
-                # text += f"{node_name[influential_movement[0]]} moved from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2].item()]} (conf: {influential_movement[3]}) ---and---\n"
-                # print("Len of influential_movement: ", len(influential_movement))
-                # pred_mov_probs = tensor_to_string(influential_movement[4])
-                # out_mov_probs = tensor_to_string(influential_movement[5])
-                # verbose: # text += f"{node_name[influential_movement[0]]} moved from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2].item()]} (conf: {influential_movement[3]}) (pred_prob:{pred_mov_probs}) , (out_probs: {out_mov_probs} ---and---\n"
-                # text += f"{node_name[influential_movement[0]]} moving from {node_name[influential_movement[1].item()]} to {node_name[influential_movement[2].item()]} (conf: {influential_movement[3]}) ---and---\n"
+
                 if type(influential_movement[3]) == torch.Tensor:
                     influential_movement[3] = influential_movement[3].item()
-                # print(type(influential_movement[0]))
-                # print(type(influential_movement[1]))
-                # print(type(influential_movement[2]))
-                # raise NotImplementedError
+                
                 active_nodes_for_context.append(influential_movement[0])
                 active_nodes_for_context.append(influential_movement[1])
                 active_nodes_for_context.append(influential_movement[2])
-                # text += f"My prediction confidence reduces by {round(influential_movement[3], 2)} if {node_name[influential_movement[0]]} did not move from {node_name[influential_movement[1]]} to {node_name[influential_movement[2]]}.\n"
-            for key__, value__ in filtered_influential_movements.items():
-                # text += f"My prediction confidence reduces by {round(value[1], 2)} if {node_name[key]} did not move from {node_name[key]} to {node_name[value[0]}.\n"
-                text += f"{node_name[key__]} is placed on/in {node_name[value__[0]]} (influence: {round(value__[1], 2)}).\n"
 
-        # if text[-10:] == "---and---\n":
-        #     text = text[:-10]
-        # elif text[-13:] == "- because, --":
-        #     text = text[:-14]
+            for key__, value__ in filtered_influential_movements.items():
+                text += f"{node_name[key__]} is placed on/in {node_name[value__[0]]} (influence: {round(value__[1], 2)}).\n"
+        ################################## End of Sorting based on if pertrubation changes predicted parent ##########################
+
         ## Get current graph text
         curr_graph_text = summarized_curr_graph_to_text(curr_graph, active_nodes_for_context)
         text = action_text + "The current state of relevant objects are as follows:\n"+curr_graph_text + "\n\n" + text
@@ -399,6 +554,9 @@ def generate_text(curr_graph, predicted_movements, influential_movements,time_in
         time_text = get_time_text(time_influence, true_time,key)
 
         text += time_text #f"\nTime influence: The current time is {curr_time_semantic_txt}. {time_text}"
+
+        time_graph = plot_time_influence_to_markdown(time_influence[key][1], y_label="Influence", title="Time Influence")
+        text += time_graph
         
         gpt_explained_txt = gpt_explainer.request(text)
         gpt_explanations += gpt_explained_txt +'\n\n'
@@ -491,6 +649,11 @@ def main():
     st.markdown("Explanation")
     text_to_display_md = convert_to_markdown(text_to_display)
     st.markdown(text_to_display_md)
+
+
+    # plot_md = create_dummy_plot_markdown()
+    # add dummy plot to markdown here.
+    # st.markdown(plot_md, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
