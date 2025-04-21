@@ -1,6 +1,6 @@
 import torch
 import sys
-sys.path.append('helpers')
+# sys.path.append('helpers')
 
 from adict import adict
 
@@ -9,17 +9,43 @@ import yaml
 import pickle
 import os
 
-from reader import RoutinesDataset
-from encoders import TimeEncodingOptions
+from helpers.reader import RoutinesDataset
+from helpers.encoders import TimeEncodingOptions
 
 
 import numpy as np
 from copy import deepcopy
+import os
 
-def analyze_routine_in_window(routines_in_window):
-    print("Routines in window")
-    print("type", type(routines_in_window))
-    raise NotImplementedError
+
+
+def assert_not_tensor(x, name="variable"):
+    assert not isinstance(x, torch.Tensor), f"{name} should not be a torch.Tensor"
+
+class Logger:
+    def __init__(self):
+        self.log_pth = 'logs'
+        self.log_file = 'logs/log_no.txt'
+        if not os.path.exists(self.log_pth):
+            os.makedirs(self.log_pth)
+        if not os.path.exists(self.log_file):
+            with open(self.log_file, 'w') as f:
+                f.write('0')
+                self.run_no = 0
+        else:
+            with open(self.log_file, 'r') as f:
+                self.run_no = int(f.read())
+        with open(self.log_file, 'w') as f:
+            f.write(str(self.run_no+1))
+        self.active_log_fold = os.path.join(self.log_pth, f'run_{self.run_no}')
+        assert not os.path.exists(self.active_log_fold)
+        os.makedirs(self.active_log_fold)
+        self.curr_log_file_no = 1
+    def log(self, data):
+        self.curr_log_file = os.path.join(self.active_log_fold, f'log_{self.curr_log_file_no}.pt')
+        torch.save(data, self.curr_log_file)
+        self.curr_log_file_no += 1
+# print(f'Movement predicted at step {step}')   
 
 class Explainer:
     def __init__(self):
@@ -31,6 +57,8 @@ class Explainer:
         train_days = 30
         time_options = TimeEncodingOptions(cfg['DATA_INFO']['weeekend_days'] if 'weeekend_days' in cfg['DATA_INFO'].keys() else None)
         time_encoding = time_options(cfg['time_encoding'])
+        self.logger = Logger()
+        self.time_encoding = time_encoding
 
         data_dir = 'data/HOMER/household0/'
         data = RoutinesDataset(data_path=os.path.join(data_dir,'processed'), 
@@ -38,114 +66,376 @@ class Explainer:
                                 batch_size=cfg['batch_size'],
                                 max_routines = (train_days, None))
         self.data = data
-        self.lookahead_steps = 3
+        self.lookahead_steps = 1
         self.confidences = [0.0]
         self.use_cuda = torch.cuda.is_available()
         if self.use_cuda: self.model.to('cuda')
         else: print(f'Learned Model NOT USING CUDA. THIS WILL TAKE AGESSSSS!!!!!!!!!!!!')
-        self.lookahead_steps = 3
+        self.lookahead_steps = 1
+        self.num_nodes = 108
+        self.node_name = torch.load("node_classes.pt")
+    
+    
+    
+    def label_coding(self, onehot_tensor):
+        assert len(onehot_tensor.shape) == 3
+        assert onehot_tensor.shape[0] == 1
+        assert onehot_tensor.shape[2] == self.num_nodes
+        assert onehot_tensor.shape[1] == self.num_nodes
+        tnsr = torch.argmax(onehot_tensor, dim=2)
+        tnsr = tnsr.squeeze(0)
+        assert len(tnsr.shape) == 1
+        assert tnsr.shape[0] == self.num_nodes
+        return tnsr
+
+    def detect_movement(self, prev_edges_unonehot, edges_unonehot):
+
+        # shape expectations:
+        # Input shapes:
+        # prev_edges_unonehot: [108]
+        # edges_unonehot: [108]
+        #
+        # Output shapes:
+        # movement_detected: bool
+        # movement_inds: [num_movements]
+        # movements: [2, 108]
+        
+        num_nodes = self.num_nodes
+        assert prev_edges_unonehot.shape[0] == num_nodes
+        assert edges_unonehot.shape[0] == num_nodes
+        assert len(prev_edges_unonehot.shape) == 1
+        assert len(edges_unonehot.shape) == 1
 
 
-    def model_infer(self,routine):
-        if self.use_cuda:
-            for k in routine.keys():
-                routine[k] = routine[k].cuda()
-        _, details,_ = self.model.step(routine)
-        # print("details", details.keys())
-        # print("details_output", details['output'].keys())
-        # print("details_evaluate_node", details['evaluate_node'])
-        # print("details_output_location", details['output']['location'].shape)
+
+
+        diff = edges_unonehot - prev_edges_unonehot
+        movement_inds = torch.nonzero(diff).squeeze(1)
+        movement_inds = movement_inds.tolist()
+        # for mov in movement_inds:
+        #     assert_not_tensor(mov, "movement index")
+        movement_detected = len(movement_inds) > 0
+        movements = torch.stack((prev_edges_unonehot, edges_unonehot))
+        assert movements.shape[0] == 2
+        assert movements.shape[1] == num_nodes
+        
+
+        return movement_detected, movement_inds, movements
+
+
+    def model_infer(self,routines, steps = 1):
+        # Routines is a list of dictionary of the routine at a given step
+        # dictionary keys: ['edges', 'nodes', 'context_time', 'y_edges', 'y_nodes', 'dynamic_edges_mask', 'time', 'change_type']
+        # shapes:
+        # edges: [1, 108, 108]
+        # nodes: [1, 108, 108]
+        # context_time: [1, 14]
+        # y_edges: [1, 108, 108]
+        # y_nodes: [1, 108, 108]
+        # dynamic_edges_mask: [1, 108, 108]
+        # time: [1]
+        # change_type: [1, 108]
+        assert len(routines) == steps
+
+        for i, routine in enumerate(routines):
+            if i != 0:
+                raise ValueError("Currenly running only one timestep runs.")
+                routine['edges'] = prev_edges
+            if self.use_cuda:
+                for k in routine.keys():
+                    routine[k] = routine[k].cuda()
+            _, details,_ = self.model.step(routine)
+            if i == 0:
+                input_tensor = details['input']['location'] #[details['evaluate_node']].cpu()
+            prev_edges = details['output_probs']['location'].to(torch.float32) #[details['evaluate_node']].cpu()
+        
         gt_tensor = details['gt']['location']#[details['evaluate_node']].cpu()
         output_tensor = details['output']['location']#[details['evaluate_node']].cpu()
         # output_probs = details['output_probs']['location']#[details['evaluate_node']].cpu()
-        input_tensor = details['input']['location']#[details['evaluate_node']].cpu()
         edge_probs = details['output_probs']['location'].to(torch.float32)
-        # print("gt_tensor_shape", gt_tensor.shape)
-        # print("output_tensor_shape", output_tensor.shape)
-        # print("input_tensor_shape", input_tensor.shape)
-        # print("routine_shape", routine['edges'].shape)
-        # print("output_probs_shape", output_probs.shape)
-        # raise NotImplementedError
+
+        # return shapes:
+        # input_tensor: [1, 108]
+        # output_tensor: [1, 108]
+        # gt_tensor: [1, 108]
+        # edge_probs: [1, 108, 108]
+        
+        assert input_tensor.shape[1] == self.num_nodes
+        assert output_tensor.shape[1] == self.num_nodes
+        assert gt_tensor.shape[1] ==  self.num_nodes
+        assert edge_probs.shape[1] == self.num_nodes
+        assert edge_probs.shape[2] == self.num_nodes
+
+        # reducing shape to [108]
+        input_tensor = input_tensor.squeeze(0)
+        output_tensor = output_tensor.squeeze(0)
+        gt_tensor = gt_tensor.squeeze(0)
+
+        # asserting shapes len = 1
+        assert len(input_tensor.shape) == 1
+        assert len(output_tensor.shape) == 1
+        assert len(gt_tensor.shape) == 1
+        assert len(edge_probs.shape) == 3
+
+        assert input_tensor.shape[0] == 108
+        assert output_tensor.shape[0] == 108
+        assert gt_tensor.shape[0] == 108
+        assert edge_probs.shape == (1, 108, 108)
+
+        # return shapes:
+        # input_tensor: [108]
+        # output_tensor: [108]
+        # gt_tensor: [108]
+        # edge_probs: [1, 108, 108]
+
         return input_tensor, output_tensor, gt_tensor, edge_probs
 
-    def infer_runner(self):
-        # test routine
-        test_routines = self.data.test_routines
-        print(type(test_routines))
-        # raise NotImplementedError
-
-        # loop through test_routines
-        for (day_routine, additonal_info) in test_routines:
-            routine_length = len(day_routine)
-            # loop through routine
-            true_movements = {}
-            for i, step_routine in enumerate(day_routine):
-                curr_routine = test_routines.collate_fn([step_routine])
-                # keys: ['edges', 'nodes', 'context_time', 'y_edges', 'y_nodes', 'dynamic_edges_mask', 'time', 'change_type']
-                # print("curr_routine_edges_shape", curr_routine['edges'].shape)
-                # print("curr_routine_nodes_shape", curr_routine['nodes'].shape)
-                # print("curr_routine_context_time_shape", curr_routine['context_time'].shape)
-                # print("context_time:", curr_routine['context_time'])
-                
-                # calculate with time encoding:
-                # 
-                # time_tensor_float_64 = torch.tensor([curr_routine['time']], dtype=torch.float64)
-                encoded_time = self.data.time_encoder(time_tensor_float_64)
-                print("time  precision", curr_routine['time'].dtype)
-                print("encoded_time:", encoded_time)
-                diff = encoded_time - curr_routine['context_time']
-                diff_sum = torch.sum(diff)
-                print("diff_sum:", diff_sum)
-                # print("curr_routine_y_edges_shape", curr_routine['y_edges'].shape)
-                # print("curr_routine_y_nodes_shape", curr_routine['y_nodes'].shape)
-                # print("curr_routine_dynamic_edges_mask_shape", curr_routine['dynamic_edges_mask'].shape)
-                # print("curr_routine_time_shape", curr_routine['time'].shape)
-                print("time:", curr_routine['time'])
-                # print("curr_routine_change_type_shape", curr_routine['change_type'].shape)
-                # print nodes
-                for i in range(108):
-                    one_hot=curr_routine["nodes"][0,i,:]
-                    # verify that the one hot encoding is correct
-                    assert torch.sum(one_hot)==1
-                    assert torch.max(one_hot)==1
-                    assert torch.min(one_hot)==0
-                    # print value
-                    ind = torch.argmax(one_hot)
-                    # print(f'Node {i} has value {ind}')
-                    assert ind==i
-                continue
-                raise NotImplementedError
+    def add_movements(self, true_movements, movement_inds, movements, step):
+        for ind in movement_inds:
+            assert_not_tensor(ind, "movement index")
+            if ind not in true_movements.keys():
+                true_movements[ind] = []
+            if movements[0,ind] not in true_movements[ind]:
+                true_movements[ind].append(movements[0,ind].item())
+                assert_not_tensor(true_movements[ind][-1], "movement index")
 
 
-                if i>0:
-                    curr_routine['edges'] = prev_edges
-                inp, pred, gt, prev_edges = self.model_infer(curr_routine)
-                movement_detected, movement_inds, movements = self.detect_movement(inp, pred)
-                if movement_detected:
-                    print(f'Movement detected at step {step}')
-                    # Do perturbation test
-                    self.perturbation_test(curr_routine, pred, true_movements, window_pred_movements,movements)
+    def detect_pred_diff(self, pred_true, pred, movement_mask):
+        diff = pred - pred_true
+        movement_detected = diff[movement_mask]
+        movement_detected = movement_detected!=0
+        return movement_detected
+    def onehot(self, ind):
+        onehot = torch.zeros(self.num_nodes)
+        onehot[ind] = 1
+        return onehot
+    def print_tensor(self, tensor, ind=None):
+        tensor = tensor[0]
+        for i in range(tensor.shape[0]):
+            if ind is not None:
+                if i!=ind:
+                    continue
+            print("row", i, end = ":")
+            for j in range(tensor.shape[1]):
+                num = tensor[i,j].item()
+                # convert to 2 decimal places
+                num = round(num, 2)
+                print(num, end = " ")
+            print()
+
+    def perturbation_test(self, curr_routine_window, pred_true, pred_prob, historic_movements, curr_transitions,change_inds):
+        # inputs:
+        # curr_routine: input data for the model: 
+        # dictionary keys: ['edges', 'nodes', 'context_time', 'y_edges', 'y_nodes', 'dynamic_edges_mask', 'time', 'change_type']
+        #
+        # pred_true: Original predicted output for reference : 
+        # Tensor [108]
+        #
+        # Pred_prob: Original predicted output probabilities
+        #
+        # historic_movements: true movements that happened in the past :
+        # dictionary: {obj1: [[prev_pos1, prev_pos2, ...], obj2: [prev_pos1, prev_pos2, ...]} 
+        # 
+        # pred_movements: in the window we are trying to predict, all the historic movements.
+        # dictionary: {obj1: [[prev_pos1, prev_pos2, ...], obj2: [prev_pos1, prev_pos2, ...]}
+        #  
+        # curr_transitions: movements that happened in the current step ie. pred_graph - curr_graph
+        # Tensor [2, 108]
+        #
+        # change_inds: indices of the movements that happened in the current step :
+        # Tensor [num_movements]   
+
+        # outputs:
+        # [curr_graph, predicted movements, movements that affect]
+        # curr_gragh: Adjanency matrix
+        # predicted movements: {obj1: [curr_pose, pred_pose], obj2: [curr_pose, pred_pose],  .... }
+        # influential_movements: {obj1: [[influential_obj1, old_pose, new_pose],[influential_obj2, old_pose, new_pose], .... ], obj2: [...]}
+
+        curr_graph = self.label_coding(curr_routine_window[0]['edges'])
+        predicted_changes = {}
+        influential_movements = {}
+        time_influence = {}
+        # print("True time", curr_routine_window[0]['time'])
+        true_time = int(curr_routine_window[0]['time'].item())
+        for chg_ind in change_inds:
+            # print("num_of_historic_movements", len(historic_movements.keys()))
+            # print("num_of_pred_movements", len(pred_movements.keys()))
+            # chg_ind = mov
+            assert_not_tensor(chg_ind, "change index")
+            predicted_changes[chg_ind] = [curr_transitions[0,chg_ind].item(), curr_transitions[1,chg_ind].item()]
+            assert_not_tensor(predicted_changes[chg_ind][0], "current transition")
+            assert_not_tensor(predicted_changes[chg_ind][1], "predicted transition")
+            influential_movements[chg_ind] = []
+            time_influence[chg_ind] = [[],[]]
+
+            # Time perturbations
+            tmp_time = curr_routine_window[0]['time'].clone()
+            tmp_context_time = curr_routine_window[0]['context_time'].clone()
+            # TODO: this is inefficient, Don't need to process time for each change separately. Only need change the index of which you are taking the diff. 
+            for t in range(380,1551,10):
+                perturb_context_time = self.time_encoding(float(t)).unsqueeze(0)
+                curr_routine_window[0]['time'] = torch.tensor([float(t)])
+                curr_routine_window[0]['context_time'] = perturb_context_time
+                inp, pred, gt, out_probs = self.model_infer(curr_routine_window,len(curr_routine_window))
+                influence_level = out_probs[0,chg_ind,pred_true[chg_ind]] - pred_prob[0,chg_ind,pred_true[chg_ind]]
+                # pred_ind = 
+                # influence_level = out_probs[0,chg_ind,:].max() - pred_prob[0,chg_ind,:].max()
+                if t == true_time:
+                    # print("True influence level", influence_level.item())
+                    # assert influence_level.item() == 0
+                    if influence_level.item() != 0:
+                        raise ValueError("Error: Something is wrong.")
+                        time_influence[chg_ind][0]= []
+                        time_influence[chg_ind][1]= []
+                        break
+                    # print("True influence level2", influence_level2)
+                # assert influence_level == influence_level2
+
+                time_influence[chg_ind][0].append(t)
+                time_influence[chg_ind][1].append(influence_level.item())
+            curr_routine_window[0]['time'] = tmp_time
+            curr_routine_window[0]['context_time'] = tmp_context_time
+
+            # # Movement perturbations
+
+            for obj in historic_movements.keys():
+                assert_not_tensor(obj, "object index")
+                tmp = curr_routine_window[0]['edges'][0,obj,:].clone()
+                obj_curr_pos = torch.argmax(tmp).item()
+                assert_not_tensor(obj_curr_pos, "object current position")
+                # print("obj_curr_pos", obj_curr_pos)
+                # raise NotImplementedError
+                # curr_routine['edges'][0,obj,:] = self.onehot(curr_transitions[1,chg_ind])
+                for obj_mov in historic_movements[obj]:
+                    curr_routine_window[0]['edges'][0,obj,:] = self.onehot(obj_mov)
+                    inp, pred, gt, out_probs = self.model_infer(curr_routine_window,len(curr_routine_window))
+                    # print("pred_shape", pred.shape)
+                    # print("pred_true_shape", pred_true.shape)
+                    # raise NotImplementedError
+                    # is the movement influential
                     
-                else:
-                    print(f'No movement detected at step {step}')
-                    
-                self.add_movements(window_pred_movements, movement_inds, movements, step)
-                if i==0:
-                    # decode the labels
-                    curr_step_edge = self.label_coding(curr_routine['edges'])
-                    next_step_edge = self.label_coding(curr_routine['y_edges'])
-                    movement_detected, movement_inds, movements = self.detect_movement(curr_step_edge, next_step_edge)
-                    self.add_movements(true_movements, movement_inds, movements, step)
-            break
-                
+                    # if(pred_true[mov]  == pred[mov]):
+                    # if out_probs[0,chg_ind,pred_true[chg_ind]]<0.5: ### TODO: Filtering all movements that cause a change in the movement prediciton. Threshold enough? 
+                    if True: ### TODO: Is no filtering fine?
+
+                        influence_level = pred_prob[0,chg_ind,pred_true[chg_ind]] - out_probs[0,chg_ind,pred_true[chg_ind]]
+                        influence_level = influence_level.item()
+                        # influence_level = pred_prob[0,chg_ind,:].max() - out_probs[0,chg_ind,:].max()
+
+                        influential_movements[chg_ind].append([obj, obj_mov, obj_curr_pos, influence_level, pred_prob[0,chg_ind,:], out_probs[0,chg_ind,:]])
+                        assert_not_tensor(obj, "influential object index")
+                        assert_not_tensor(obj_mov, "influential object movement")
+                        assert_not_tensor(obj_curr_pos, "influential object current position")
+                        assert_not_tensor(influence_level, "influence level")
+                        # assert_not_tensor(influential_movements[4], "predicted probabilities")
+                        # assert_not_tensor(influential_movements[5], "output probabilities")
+        
+                curr_routine_window[0]['edges'][0,obj,:] = tmp
+            # for obj in pred_movements.keys():
+            #     raise ValueError("Logic error: pred movements should not be considered!!!")
             
 
 
 
-def main():
-    explainer = Explainer()
-    explainer.infer_runner()
 
-if __name__ == "__main__":
-    main()
+
+        # print("time_influence", time_influence)
+        data = [curr_graph, predicted_changes, influential_movements, time_influence, true_time]
+        self.logger.log(data)
+        # raise NotImplementedError
+        # time perturbations:
         
+        return curr_graph, predicted_changes, influential_movements
+
+
+    def infer_runner(self):
+        # test routine
+        test_routines = self.data.test_routines
+        # test routine is of datatype -> <class 'reader.DataSplit'>
+        # print(type(test_routines))
+        # raise NotImplementedError
+        day_no = 1
+
+        # loop through test_routines
+        for (day_routine, additonal_info) in test_routines:
+            print(f'Day {day_no}')
+            day_no += 1
+            # About day_routine: probably record of graph through the day
+            # day_routine[i] will return:  [prev_edges, prev_nodes, encoded_time, edges, nodes, self.active_edges, tensor(time), change_type]
+            routine_length = len(day_routine)
+
+            # loop through routine
+            historic_movements = {}
+
+            for step in range(routine_length):
+                
+                routines_in_window = [test_routines.collate_fn([day_routine[j]]) for j in range(step, min(step+self.lookahead_steps, routine_length))]
+                # collate_fn: will wrap up day_routine[j] into a dictionary
+                # routines_in_window is a list of dictionaries
+                # each dictionary is a step in the routine with keys: ['edges', 'nodes', 'context_time', 'y_edges', 'y_nodes', 'dynamic_edges_mask', 'time', 'change_type']
+                # shapes:
+                # edges: [1, 108, 108]
+                # nodes: [1, 108, 108]
+                # context_time: [1, 14]
+                # y_edges: [1, 108, 108]
+                # y_nodes: [1, 108, 108]
+                # dynamic_edges_mask: [1, 108, 108]
+                # time: [1]
+                # change_type: [1, 108]
+                
+                inp, pred, gt, prev_edges = self.model_infer(routines_in_window,len(routines_in_window))
+                movement_detected, movement_inds, movements = self.detect_movement(inp, pred)
+                if movement_detected:
+                    # Only keep movement_inds that are correct
+                    correct_mov_inds = []
+                    for mv in movement_inds:
+                        # print("vals:")
+                        # print(routines_in_window[0]['y_edges'][0,mv,:].shape)
+                        # print(torch.argmax(routines_in_window[0]['y_edges'][0,mv,:]))
+                        # print(routines_in_window[0]['y_edges'][0,mv,:])
+
+                        true_obj_parent = torch.argmax(routines_in_window[0]['y_edges'][0,mv,:]).item()
+                        # print(true_obj_parent)
+                        # print(pred[mv])
+                        predicted_obj_parent = pred[mv]
+                        if true_obj_parent == predicted_obj_parent:
+                            correct_mov_inds.append(mv)
+                        # raise KeyboardInterrupt
+                    
+
+                    # print(f'Movement predicted at step {step}')
+                    # Do perturbation test
+                    pred_prob = prev_edges
+                    # self.perturbation_test(routines_in_window, pred, pred_prob, historic_movements,movements, movement_inds)
+                    if(len(correct_mov_inds)>0):
+                        self.perturbation_test(routines_in_window, pred, pred_prob, historic_movements,movements, correct_mov_inds)
+                    
+                else:
+                    # print(f'No movement detected at step {step}')
+                    pass
+                    
+                # self.add_movements(window_pred_movements, movement_inds, movements, step)
+        
+                # check for movements in histry and update historic movements
+                curr_step_edge = self.label_coding(routines_in_window[0]['edges'])
+                next_step_edge = self.label_coding(routines_in_window[-1]['y_edges'])
+
+                movement_detected, movement_inds, movements = self.detect_movement(curr_step_edge, next_step_edge)
+                if movement_detected:
+                    # print(f'Movement occured at step {step}')
+                    prct_mv_txt = ''
+                    for ind in movement_inds:
+                        prct_mv_txt += f'{self.node_name[ind]}+({ind}) : {self.node_name[movements[0,ind]]}+({movements[0,ind]}) -> {self.node_name[movements[1,ind]]}+({movements[1,ind]})\n'
+                    print(prct_mv_txt)
+                    # self.add_movements(historic_movements, movement_inds, movements, step)   
+                    
+
+                    self.add_movements(historic_movements, movement_inds, movements, step)
+                    hst_mv_str = 'historic movements:\n'
+                    for obj in historic_movements.keys():
+                        hst_mv_str += f'{self.node_name[obj]}({obj}):'
+                        for mv in historic_movements[obj]:
+                            hst_mv_str += f'{self.node_name[mv]}+({mv}), '
+                        hst_mv_str += '\n'
+
+

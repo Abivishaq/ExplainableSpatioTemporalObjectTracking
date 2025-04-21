@@ -1,8 +1,37 @@
 import torch
 
+file= 'data/HOMER/household0/processed/train/000.pt'
+data = torch.load(file)
+print(len(data))
+print(data[0].keys())
+print("change_type",data[0]['change_type'])
+print("activity",data[0]['activity'])
+# nodes = data[0]['prev_nodes']
+# for i in range(len(nodes)):
+#     print(i, torch.argmax(nodes[i]).item())
+prev_edge = data[0]['prev_edges']
+prev_edge = torch.argmax(prev_edge, dim=1)
 
-x = torch.tensor([-0.0033751726150512695, -0.01749134063720703, 0.002192676067352295, -0.017548859119415283, -0.04261195659637451, -0.035304129123687744, -0.03959643840789795, -0.2610904574394226, -0.08278727531433105, -0.09093290567398071, -0.37483644485473633, -0.17399728298187256, -0.1599435806274414])
-print("mean(x)",torch.mean(x))
+edges = data[0]['edges']
+edges = torch.argmax(edges, dim=1)
+edge_change = edges - prev_edge
+
+
+print("edge_Change:",edge_change)
+
+print("change_type index:",torch.nonzero(data[0]['change_type'], as_tuple=True)[0])
+print("edge change index:",torch.nonzero(edge_change, as_tuple=True)[0])
+
+print("len change_type",len(data[0]['change_type']))
+
+print("time",data[0]['time'])
+
+for data_i in data:
+    print("activity",data_i['activity'])
+
+
+# x = torch.tensor([-0.0033751726150512695, -0.01749134063720703, 0.002192676067352295, -0.017548859119415283, -0.04261195659637451, -0.035304129123687744, -0.03959643840789795, -0.2610904574394226, -0.08278727531433105, -0.09093290567398071, -0.37483644485473633, -0.17399728298187256, -0.1599435806274414])
+# print("mean(x)",torch.mean(x))
 # # def convert_to_markdown(data):
 # #     i=0
 # #     while(True):

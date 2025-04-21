@@ -104,6 +104,15 @@ class DataSplit():
         if 'activity' in data_list[0].keys():
             additional_info['activity'] = [sample['activity'] for sample in data_list]
         return samples, additional_info
+    
+    def get_raw_routine(self, idx: int):
+        data_list = torch.load(os.path.join(self.routines_dir, self.files[idx])) #, map_location=lambda storage, loc: storage.cuda(1))
+        samples = data_list#[sample for sample in data_list]
+        additional_info = {'timestamp':[time_external(sample['time']) for sample in data_list], 'active_nodes':self.active_edges.sum(-1) > 0, 'total_nodes':self.active_edges.size()[-1]}
+        if 'activity' in data_list[0].keys():
+            additional_info['activity'] = [sample['activity'] for sample in data_list]
+        return samples, additional_info
+    
     def __getitem__(self, idx: int):
         return self.get_routine(idx) if self.whole_routines else self.get_sample(idx)
 

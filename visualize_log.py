@@ -115,6 +115,8 @@ def plot_time_influence_to_markdown(
         ax.axvspan(70, NUM_EXPECTED_ELEMENTS - 0.5, facecolor=COLOR_REGION_3, alpha=BACKGROUND_ALPHA, zorder=0, label='Evening')
 
         # --- Plot Data ---
+        for i in range(NUM_EXPECTED_ELEMENTS):
+            score_list[i]+=1
         indices = range(NUM_EXPECTED_ELEMENTS)
         ax.plot(indices, score_list, marker='.', linestyle='-', zorder=2, color='black', label=y_label)
 
@@ -136,7 +138,7 @@ def plot_time_influence_to_markdown(
         ax.set_xticklabels(hour_labels, rotation=45, ha='right') # Apply labels *after* setting ticks
 
         # --- Add Labels, Title, Grid, Legend (with Font Sizes) ---
-        ax.set_xlabel("Time (Approx. 2-Hourly Intervals starting near 8:00 AM)", fontsize=AXIS_LABEL_FONTSIZE) # Set fontsize
+        ax.set_xlabel("Time", fontsize=AXIS_LABEL_FONTSIZE) # Set fontsize
         ax.set_ylabel(y_label, fontsize=AXIS_LABEL_FONTSIZE) # Set fontsize
         ax.set_title(title, fontsize=TITLE_FONTSIZE) # Set fontsize
 
