@@ -175,6 +175,7 @@ Frame responses in a human-centered way that reduces cognitive effort for the us
         """
         Appends the context to the base prompt and sends it to GPT.
         """
+        # return ''
         full_prompt = self.base_prompt + "\n" + context
         example1_mechanistic_explanation = """ACTION: I moved chessboard from bookshelf to table.
 

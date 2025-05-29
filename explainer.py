@@ -67,7 +67,7 @@ class Explainer:
                                 max_routines = (train_days, None))
         self.data = data
         self.lookahead_steps = 1
-        self.confidences = [0.0]
+        # self.confidences = [0.0]
         self.use_cuda = torch.cuda.is_available()
         if self.use_cuda: self.model.to('cuda')
         else: print(f'Learned Model NOT USING CUDA. THIS WILL TAKE AGESSSSS!!!!!!!!!!!!')
