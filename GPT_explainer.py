@@ -186,12 +186,6 @@ house > dining_room > mat > table > lemonade
 house > dining_room > kitchen_counter > sink > sponge
 house > dining_room > kitchen_counter > stove > sauce_pan
 house > dining_room > kitchen_counter > food_donut
-house > dining_room > kitchen_counter > drying_rack
-house > dining_room > kitchen_counter > dishrack
-house > dining_room > kitchen_counter > dishtowel
-house > dining_room > kitchen_counter > food_apple
-house > dining_room > kitchen_counter > food_bread
-house > dining_room > kitchen_counter > dish_soap
 house > home_office > bookshelf > chessboard
 house > home_office > bookshelf > deck_of_cards
 
@@ -206,7 +200,7 @@ It is NOT later than 03:30 PM (influence: 0.1).
 It is NOT evening (influence: 0.88).
 """
 
-        example1_human_centered_explanation = """I moved the chessboard to the table since you had cheese on the table and you prefer playing chess while eating snacking in the afternoon."""
+        example1_human_centered_explanation = """I moved the chessboard to the table since you had a cutting board on the table which you use for snacking. You prefer playing chess while eating snacking in the afternoon."""
         
         response = self.client.chat.completions.create(
             model="gpt-4o",

@@ -557,10 +557,10 @@ def generate_text(curr_graph, predicted_movements, influential_movements,time_in
 
         text += time_text #f"\nTime influence: The current time is {curr_time_semantic_txt}. {time_text}"
 
-        time_graph = plot_time_influence_to_markdown(time_influence[key][1], y_label="Influence", title="Time Influence")
-        text += time_graph
         
         gpt_explained_txt = gpt_explainer.request(text)
+        time_graph = plot_time_influence_to_markdown(time_influence[key][1], y_label="Influence", title="Time Influence")
+        text += time_graph
         gpt_explanations += gpt_explained_txt +'\n\n'
         
         raw_exp_text += text + '\n\n GPT Explanation: ' + gpt_explained_txt + "\n\n"
