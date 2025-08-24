@@ -4,7 +4,7 @@ from helpers.reader import RoutinesDataset
 class DatasetManager:
     def __init__(
         self,
-        data_dir='data/HOMER/household0/',
+        data_dir,
         time_encoder=None,
         batch_size=32,
         train_days=30

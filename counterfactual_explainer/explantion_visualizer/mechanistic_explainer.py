@@ -38,11 +38,12 @@ class MechanisticExplainer:
             predicted_mov (Tuple[int, int, int]): (object, previous_parent, new_parent)
             explanation (Dict): Explanation metadata
         """
+        print("Explanation:", explanation)
         obj_name = self.node_classes[predicted_mov[0]]
         prev_name = self.node_classes[predicted_mov[1]]
         next_name = self.node_classes[predicted_mov[2]]
 
-        st.markdown(f"**Prediction:** {obj_name} moved from *{prev_name}* to *{next_name}*")
+        st.markdown(f"**Prediction:** {obj_name} moves from *{prev_name}* to *{next_name}*")
 
         movement_perturbation = explanation.get("movement_perturbation", [])
         time_perturbation = explanation.get("time_perturbation", [])
@@ -53,7 +54,7 @@ class MechanisticExplainer:
                 pert_obj = self.node_classes[mov["object"]]
                 pert_prev = self.node_classes[mov["previous_parent"]]
                 pert_next = self.node_classes[mov["curr_parent"]]
-                st.write(f"- {pert_obj} moved from {pert_prev} to {pert_next}")
+                st.write(f"- {pert_obj} moves from {pert_prev} to {pert_next}")
 
         if time_perturbation:
             st.markdown("**Time steps where changing context influenced prediction:**")

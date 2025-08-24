@@ -1,0 +1,1374 @@
+day_number,routine_no,time,edges,predicted_mov,explanation
+1,0,tensor([390.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",painkillers from kitchen_counter to bathroom_cabinet,
+1,1,tensor([400.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",painkillers from kitchen_counter to bathroom_cabinet,
+1,2,tensor([410.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",painkillers from kitchen_counter to bathroom_cabinet,
+1,3,tensor([420.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",painkillers from kitchen_counter to bathroom_cabinet,
+1,38,tensor([770.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_peanut_butter from kitchen_counter to cupboard,
+1,38,tensor([770.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",knife from kitchen_counter to sink,"Since knife from knifeblock to kitchen_counter
+"
+1,38,tensor([770.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from kitchen_counter to cupboard,
+1,39,tensor([780.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_jam from kitchen_counter to fridge,
+1,39,tensor([780.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_peanut_butter from kitchen_counter to cupboard,
+1,39,tensor([780.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",knife from kitchen_counter to cupboard,"Since knife from knifeblock to kitchen_counter
+"
+1,39,tensor([780.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from kitchen_counter to cupboard,
+1,40,tensor([790.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",knife from kitchen_counter to cupboard,"Since knife from knifeblock to kitchen_counter
+"
+1,40,tensor([790.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from kitchen_counter to cupboard,
+1,41,tensor([800.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from sink to cupboard,"Since plate from kitchen_counter to sink
+"
+1,65,tensor([1040.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_rice from cupboard to cookingpot,"Since painkillers from kitchen_counter to bathroom_cabinet
+Since food_jam from kitchen_counter to fridge
+Since food_peanut_butter from kitchen_counter to cupboard
+Since cookingpot from cupboard to kitchen_counter
+"
+1,65,tensor([1040.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_vegetable from fridge to cookingpot,"Since cookingpot from cupboard to kitchen_counter
+"
+1,65,tensor([1040.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",oil from kitchen_counter to cookingpot,"Since cookingpot from cupboard to kitchen_counter
+"
+1,66,tensor([1050.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from kitchen_counter to sink,"Since painkillers from kitchen_counter to bathroom_cabinet
+Since cookingpot from cupboard to kitchen_counter
+Since oil from kitchen_counter to cookingpot
+"
+1,66,tensor([1050.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_rice from kitchen_counter to cookingpot,
+1,66,tensor([1050.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_vegetable from kitchen_counter to cookingpot,
+1,67,tensor([1060.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from stove to sink,"Since oil from kitchen_counter to cookingpot
+"
+1,67,tensor([1060.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from kitchen_counter to table,"Since food_jam from kitchen_counter to fridge
+Since plate from cupboard to kitchen_counter
+Since oil from kitchen_counter to cookingpot
+Since food_rice from kitchen_counter to cookingpot
+Since food_vegetable from kitchen_counter to cookingpot
+"
+1,68,tensor([1070.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from table to sink,
+1,68,tensor([1070.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from table to sink,"Since spoon from cupboard to plate
+"
+1,69,tensor([1080.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from table to sink,
+1,69,tensor([1080.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from table to sink,"Since spoon from cupboard to plate
+"
+1,69,tensor([1080.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spoon from plate to sink,"Since plate from kitchen_counter to table
+Since oil from kitchen_counter to cookingpot
+Since spoon from cupboard to plate
+"
+9,52,tensor([910.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee_cup from cupboard to table,"Since coffee from cupboard to table
+Since tea from cupboard to table
+"
+9,52,tensor([910.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mug from cupboard to table,"Since coffee from cupboard to table
+Since tea from cupboard to table
+"
+9,64,tensor([1030.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from kitchen_counter to stove,"Since coffee from table to cupboard
+Since tea from table to cupboard
+Since cookingpot from cupboard to kitchen_counter
+"
+9,64,tensor([1030.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_rice from kitchen_counter to cookingpot,"Since food_rice from cupboard to kitchen_counter
+"
+9,64,tensor([1030.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_vegetable from fridge to kitchen_counter,"Since oil from cupboard to kitchen_counter
+"
+9,64,tensor([1030.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",oil from kitchen_counter to cookingpot,"Since cookingpot from cupboard to kitchen_counter
+Since oil from cupboard to kitchen_counter
+"
+9,65,tensor([1040.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from kitchen_counter to table,"Since cookingpot from cupboard to kitchen_counter
+"
+9,65,tensor([1040.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from kitchen_counter to table,"Since coffee from table to cupboard
+Since tea from table to cupboard
+Since food_rice from kitchen_counter to cookingpot
+Since oil from kitchen_counter to cookingpot
+Since plate from cupboard to kitchen_counter
+"
+9,65,tensor([1040.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spoon from cupboard to cookingpot,"Since cookingpot from cupboard to kitchen_counter
+"
+9,66,tensor([1050.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from table to sink,"Since coffee from table to cupboard
+Since tea from table to cupboard
+"
+9,66,tensor([1050.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from table to sink,"Since spoon from cupboard to plate
+"
+9,67,tensor([1060.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from table to sink,"Since cookingpot from kitchen_counter to table
+"
+9,67,tensor([1060.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spoon from plate to sink,"Since plate from table to sink
+Since spoon from cupboard to plate
+"
+9,72,tensor([1110.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spoon from sink to cupboard,"Since coffee_cup from sink to cupboard
+Since mug from sink to cupboard
+Since cookingpot from table to sink
+Since plate from sink to cupboard
+Since spoon from plate to sink
+"
+9,74,tensor([1130.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee_cup from dishwasher to cupboard,
+9,74,tensor([1130.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from dishwasher to cupboard,"Since oil from kitchen_counter to cookingpot
+"
+9,103,tensor([1420.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cd from cd_player to table,
+9,104,tensor([1430.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cd from cd_player to table,
+9,105,tensor([1440.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cd from cd_player to table,"Since toothbrush from bathroom_counter to bathroom_cabinet
+Since coffee_cup from dishwasher to cupboard
+"
+3,1,tensor([390.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from bedroom to dining_room,"Since spectacles from bathroom_counter to bedroom
+"
+3,18,tensor([560.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mail from outside to bench,"Since spectacles from dining_room to outside
+Since bag from dresser to bench
+Since shoes from dining_room to outside
+"
+3,18,tensor([560.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",shoes from outside to dining_room,"Since spectacles from dining_room to outside
+"
+3,18,tensor([560.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from outside to bedroom,"Since spectacles from dining_room to outside
+Since shoes from dining_room to outside
+"
+3,46,tensor([840.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee_cup from cupboard to table,"Since coffee from cupboard to table
+Since tea from cupboard to table
+"
+3,46,tensor([840.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mug from cupboard to table,"Since coffee from cupboard to table
+Since tea from cupboard to table
+"
+3,47,tensor([850.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee_cup from cupboard to table,"Since coffee from cupboard to table
+Since tea from cupboard to table
+"
+3,47,tensor([850.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mug from cupboard to table,"Since coffee from cupboard to table
+Since tea from cupboard to table
+"
+3,65,tensor([1030.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee_cup from sink to cupboard,"Since coffee from table to cupboard
+Since tea from table to cupboard
+Since coffee_cup from table to sink
+"
+3,65,tensor([1030.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mug from sink to cupboard,"Since mug from table to sink
+"
+3,66,tensor([1040.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_rice from cupboard to kitchen_counter,"Since oil from cupboard to kitchen_counter
+"
+3,66,tensor([1040.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_vegetable from fridge to kitchen_counter,"Since oil from cupboard to kitchen_counter
+Since plate from cupboard to kitchen_counter
+"
+3,67,tensor([1050.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_rice from kitchen_counter to cookingpot,"Since cookingpot from cupboard to kitchen_counter
+Since food_rice from cupboard to kitchen_counter
+"
+3,67,tensor([1050.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_vegetable from kitchen_counter to cookingpot,"Since cookingpot from cupboard to kitchen_counter
+Since food_vegetable from fridge to kitchen_counter
+"
+3,67,tensor([1050.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",oil from kitchen_counter to cookingpot,"Since oil from cupboard to kitchen_counter
+Since cookingpot from cupboard to kitchen_counter
+"
+3,68,tensor([1060.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from stove to sink,"Since oil from kitchen_counter to cookingpot
+Since cookingpot from kitchen_counter to stove
+"
+3,69,tensor([1070.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from table to sink,
+3,69,tensor([1070.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from table to sink,"Since spoon from cupboard to plate
+"
+3,70,tensor([1080.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from table to sink,
+3,70,tensor([1080.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from table to sink,"Since spoon from cupboard to plate
+"
+3,70,tensor([1080.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spoon from plate to sink,"Since oil from kitchen_counter to cookingpot
+Since plate from kitchen_counter to table
+Since food_rice from kitchen_counter to cookingpot
+Since food_vegetable from kitchen_counter to cookingpot
+Since spoon from cupboard to plate
+"
+3,75,tensor([1130.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spoon from sink to cupboard,"Since spectacles from outside to bathroom_counter
+Since mail from outside to bench
+Since coffee_cup from sink to cupboard
+Since mug from sink to cupboard
+Since plate from sink to cupboard
+Since cookingpot from table to sink
+Since spoon from plate to sink
+"
+3,87,tensor([1250.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee_cup from dishwasher to cupboard,
+3,87,tensor([1250.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mug from dishwasher to cupboard,"Since coffee_cup from cupboard to dishwasher
+Since plate from cupboard to dishwasher
+"
+3,87,tensor([1250.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from dishwasher to cupboard,
+8,5,tensor([430.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",hairbrush from bathroom_counter to bathroom_cabinet,
+8,5,tensor([430.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",hairdryer from bathroom_counter to bathroom_cabinet,
+8,10,tensor([480.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from bedroom to dining_room,"Since spectacles from bathroom_counter to bedroom
+"
+8,41,tensor([790.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mail from outside to bench,"Since bag from dresser to bench
+"
+8,44,tensor([820.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mail from outside to bench,"Since bag from dresser to bench
+"
+8,46,tensor([840.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from bedroom to bathroom_counter,"Since spectacles from dining_room to bedroom
+"
+6,41,tensor([790.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mail from outside to bench,
+6,44,tensor([820.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mail from outside to bench,
+6,46,tensor([840.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from bedroom to bathroom_counter,"Since spectacles from dining_room to bedroom
+"
+2,2,tensor([400.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",hairbrush from bathroom_counter to bathroom_cabinet,
+2,2,tensor([400.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",hairdryer from bathroom_counter to bathroom_cabinet,
+2,50,tensor([880.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee_cup from cupboard to table,"Since tea from cupboard to table
+"
+2,50,tensor([880.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mug from cupboard to table,"Since tea from cupboard to table
+"
+2,51,tensor([890.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee_cup from cupboard to table,
+2,51,tensor([890.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mug from cupboard to table,
+2,52,tensor([900.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee_cup from cupboard to table,"Since coffee from cupboard to table
+Since tea from cupboard to table
+"
+2,52,tensor([900.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mug from cupboard to table,"Since coffee from cupboard to table
+Since tea from cupboard to table
+"
+2,59,tensor([970.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee_cup from sink to table,"Since coffee from cupboard to table
+Since tea from cupboard to table
+"
+2,59,tensor([970.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mug from sink to table,"Since coffee from cupboard to table
+Since tea from cupboard to table
+"
+2,61,tensor([990.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee_cup from dishwasher to cupboard,
+2,61,tensor([990.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from dishwasher to cupboard,
+2,72,tensor([1100.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_rice from kitchen_counter to cookingpot,"Since cookingpot from cupboard to kitchen_counter
+"
+2,72,tensor([1100.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_vegetable from fridge to cookingpot,"Since cookingpot from cupboard to kitchen_counter
+"
+2,72,tensor([1100.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",oil from kitchen_counter to cookingpot,"Since cookingpot from cupboard to kitchen_counter
+Since oil from cupboard to kitchen_counter
+"
+2,73,tensor([1110.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from kitchen_counter to table,"Since cookingpot from cupboard to kitchen_counter
+Since food_rice from kitchen_counter to cookingpot
+Since oil from kitchen_counter to cookingpot
+Since food_vegetable from fridge to cookingpot
+"
+2,73,tensor([1110.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from kitchen_counter to table,"Since plate from cupboard to kitchen_counter
+Since food_rice from kitchen_counter to cookingpot
+Since oil from kitchen_counter to cookingpot
+"
+2,73,tensor([1110.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spoon from cupboard to cookingpot,"Since cookingpot from cupboard to kitchen_counter
+Since food_rice from kitchen_counter to cookingpot
+Since oil from kitchen_counter to cookingpot
+Since food_vegetable from fridge to cookingpot
+"
+2,74,tensor([1120.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from table to sink,"Since coffee from table to cupboard
+Since tea from table to cupboard
+Since cookingpot from kitchen_counter to table
+"
+2,74,tensor([1120.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spoon from cookingpot to plate,"Since spoon from cupboard to cookingpot
+"
+2,75,tensor([1130.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from table to sink,"Since cookingpot from kitchen_counter to table
+Since spoon from cookingpot to plate
+"
+2,75,tensor([1130.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from table to sink,"Since spoon from cookingpot to plate
+"
+2,75,tensor([1130.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spoon from plate to sink,"Since spoon from cookingpot to plate
+"
+2,80,tensor([1180.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from sink to cupboard,"Since plate from sink to cupboard
+Since cookingpot from table to sink
+"
+2,80,tensor([1180.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spoon from sink to cupboard,"Since plate from sink to cupboard
+Since cookingpot from table to sink
+Since spoon from plate to sink
+"
+0,1,tensor([390.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",hairbrush from bathroom_counter to bathroom_cabinet,
+0,1,tensor([390.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",hairdryer from bathroom_counter to bathroom_cabinet,
+0,13,tensor([510.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from bedroom to dining_room,"Since spectacles from bathroom_counter to bedroom
+"
+0,41,tensor([790.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mail from outside to bench,"Since bag from dresser to bench
+"
+0,44,tensor([820.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from bedroom to bathroom_counter,"Since spectacles from dining_room to bedroom
+"
+0,45,tensor([830.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from bedroom to bathroom_counter,"Since spectacles from dining_room to bedroom
+"
+0,46,tensor([840.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from bedroom to bathroom_counter,"Since spectacles from dining_room to bedroom
+"
+0,47,tensor([850.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from bedroom to bathroom_counter,"Since spectacles from dining_room to bedroom
+"
+0,48,tensor([860.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee_cup from cupboard to table,
+0,48,tensor([860.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mug from cupboard to table,
+0,57,tensor([950.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee_cup from sink to table,"Since coffee from cupboard to table
+Since tea from cupboard to table
+"
+0,57,tensor([950.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mug from sink to table,"Since coffee from cupboard to table
+Since tea from cupboard to table
+"
+0,64,tensor([1020.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from dishwasher to cupboard,
+0,65,tensor([1030.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mug from dishwasher to cupboard,
+0,66,tensor([1040.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from kitchen_counter to table,"Since plate from cupboard to kitchen_counter
+"
+0,66,tensor([1040.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spoon from cupboard to plate,"Since plate from cupboard to kitchen_counter
+"
+0,67,tensor([1050.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_rice from kitchen_counter to cookingpot,"Since cookingpot from cupboard to kitchen_counter
+"
+0,67,tensor([1050.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",food_vegetable from fridge to kitchen_counter,"Since plate from cupboard to kitchen_counter
+Since food_rice from cupboard to kitchen_counter
+Since oil from cupboard to kitchen_counter
+"
+0,67,tensor([1050.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",oil from kitchen_counter to cookingpot,"Since cookingpot from cupboard to kitchen_counter
+Since oil from cupboard to kitchen_counter
+"
+0,68,tensor([1060.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from kitchen_counter to table,"Since keys from table to bag
+Since cookingpot from cupboard to kitchen_counter
+Since food_rice from kitchen_counter to cookingpot
+Since oil from kitchen_counter to cookingpot
+Since food_vegetable from fridge to cookingpot
+"
+0,68,tensor([1060.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spoon from cupboard to cookingpot,"Since cookingpot from cupboard to kitchen_counter
+Since oil from kitchen_counter to cookingpot
+"
+0,69,tensor([1070.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from table to sink,"Since cookingpot from kitchen_counter to table
+"
+0,69,tensor([1070.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from table to sink,"Since spoon from cupboard to plate
+"
+0,70,tensor([1080.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cookingpot from table to sink,
+0,70,tensor([1080.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from table to sink,"Since spoon from cupboard to plate
+"
+0,70,tensor([1080.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spoon from plate to sink,"Since shoes from shoe_rack to dining_room
+Since mail from outside to bench
+Since mug from dishwasher to cupboard
+Since plate from kitchen_counter to table
+Since cookingpot from kitchen_counter to table
+Since food_rice from kitchen_counter to cookingpot
+Since oil from kitchen_counter to cookingpot
+Since spoon from cupboard to plate
+"
+0,71,tensor([1090.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spoon from plate to sink,"Since plate from table to sink
+Since spoon from cupboard to plate
+"
+4,15,tensor([540.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",painkillers from kitchen_counter to bathroom_cabinet,
+4,16,tensor([550.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from bedroom to outside,"Since spectacles from bathroom_counter to bedroom
+"
+4,40,tensor([790.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mail from outside to bench,"Since bag from dresser to bench
+"
+4,42,tensor([810.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mail from outside to bench,"Since bag from dresser to bench
+"
+4,42,tensor([810.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",shoes from outside to dining_room,"Since spectacles from dining_room to outside
+"
+4,42,tensor([810.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from outside to bathroom_counter,"Since spectacles from dining_room to outside
+"
+4,65,tensor([1040.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mug from dishwasher to cupboard,
+4,84,tensor([1230.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee_cup from dishwasher to cupboard,
+4,84,tensor([1230.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mug from dishwasher to cupboard,"Since coffee_cup from cupboard to dishwasher
+Since plate from cupboard to dishwasher
+"
+4,84,tensor([1230.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",plate from dishwasher to cupboard,
+5,0,tensor([380.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",painkillers from kitchen_counter to bathroom_cabinet,
+5,3,tensor([410.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",hairbrush from bathroom_counter to bathroom_cabinet,
+5,3,tensor([410.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",hairdryer from bathroom_counter to bathroom_cabinet,
+5,41,tensor([790.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee_cup from cupboard to table,"Since coffee from cupboard to table
+Since tea from cupboard to table
+"
+5,41,tensor([790.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mug from cupboard to table,"Since coffee from cupboard to table
+Since tea from cupboard to table
+"
+5,65,tensor([1030.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cd from cd_player to table,"Since cd from tvstand to cd_player
+"
+5,71,tensor([1090.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee from table to cupboard,"Since hairdryer from bathroom_counter to bathroom_cabinet
+"
+5,71,tensor([1090.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",tea from table to cupboard,
+5,72,tensor([1100.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee from table to cupboard,
+5,72,tensor([1100.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",tea from table to cupboard,
+5,86,tensor([1240.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cd from cd_player to table,
+5,90,tensor([1280.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cd from cd_player to table,
+5,91,tensor([1290.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",cd from cd_player to table,
+7,15,tensor([530.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from bedroom to dining_room,"Since spectacles from bathroom_counter to bedroom
+"
+7,41,tensor([790.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mail from outside to bench,"Since bag from dresser to bench
+"
+7,44,tensor([820.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mail from outside to bench,"Since bag from dresser to bench
+"
+7,46,tensor([840.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mail from outside to bench,"Since bag from dresser to bench
+"
+7,46,tensor([840.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",shoes from outside to dining_room,"Since spectacles from dining_room to outside
+"
+7,46,tensor([840.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from outside to bathroom_counter,"Since spectacles from dining_room to outside
+"
+7,47,tensor([850.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from bedroom to bathroom_counter,
+7,48,tensor([860.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from bedroom to bathroom_counter,
+7,49,tensor([870.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from bedroom to bathroom_counter,
+7,50,tensor([880.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",spectacles from bedroom to bathroom_counter,
+7,71,tensor([1090.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",coffee_cup from sink to cupboard,"Since coffee_cup from table to sink
+"
+7,71,tensor([1090.]),"tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]])",mug from sink to cupboard,"Since mug from table to sink
+"

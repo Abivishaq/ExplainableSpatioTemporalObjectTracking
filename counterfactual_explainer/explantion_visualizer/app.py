@@ -5,7 +5,10 @@ import traceback
 
 # Ensure local module imports work
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
-
+helpers_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'helpers'))
+print(f"Helpers path: {helpers_path}")
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from helpers import encoders
 from log_handler import LogHandler
 from context_visualizer import ContextVisualizer
 from mechanistic_explainer import MechanisticExplainer  
@@ -26,6 +29,14 @@ def main():
         st.subheader(f"Routine #{routine_no}: Scene Graph & Context")
         context_viz = ContextVisualizer(log_handler)
         context_viz.show_scene_graph()
+
+        # --- Routine Time ---
+        time = routine_data[0][0]
+        time = encoders.time_external(time)
+        time = encoders.human_readable_from_external(time)
+        st.write(f"Routine Time: {time}")
+        # st.markdown("**Routine Time:** ")
+        
 
         # --- Raw Data (optional) ---
         with st.expander("Raw Context Data (time, edge_prev, edge_new)", expanded=False):

@@ -17,14 +17,18 @@ from debugger import Debugger
 
 
 class Explainer:
-    def __init__(self, step_size):
+    def __init__(self, step_size, household_id):
 
+        self.household_id = household_id
         # Initialize core components
-        self.model = STOTModel(step_size=step_size)
+        self.model = STOTModel(step_size=step_size, household_id=self.household_id)
         # self.logger = Logger()
+
+        dataset_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'data','HOMER' ,f'household{self.household_id}')
 
         # Load dataset
         self.data_manager = DatasetManager(
+            data_dir=dataset_dir,
             time_encoder=self.model.time_encoder,
             batch_size=self.model.model_configs['batch_size'],
             train_days=30
@@ -42,9 +46,11 @@ class Explainer:
         self.step_size = step_size
         curr_file_location = os.path.dirname(os.path.abspath(__file__))
         log_folder = os.path.join(curr_file_location, '..', 'logs')
-        self.logger = Logger(log_folder=log_folder, household_id=self.data_manager.household_id, step_size=step_size)
+        self.logger = Logger(log_folder=log_folder, household_id=self.household_id, step_size=step_size)
 
         self.skip_if_log_exists = True
+
+        assert self.household_id == self.data_manager.household_id
 
     def run(self):
         """
@@ -64,7 +70,7 @@ class Explainer:
             self.movement_tracker.reset()  # Reset movement tracker for each day 
 
             for no, routine_window in enumerate(routine_iterator):
-                print(f"Processing routine {no + 1}/{len(day_routine) - self.step_size + 1}...")
+                # print(f"Processing routine {no + 1}/{len(day_routine) - self.step_size + 1}...")
                 # Step 1: Inference:
                 inp, pred, gt, edge_probs = self.model.infer(routine_window)
                 # self.debugger.verify_model_returns(inp, gt, routine_window)
@@ -85,6 +91,13 @@ class Explainer:
 
 
 if __name__ == "__main__":
-    explainer = Explainer(step_size=1)
-    explainer.run()
+    
+    for i in range(0, 5): # Households 0 to 4
+        for j in range(1,10): # step iterations 1 to 9
+            print(f"Running explainer for household {i}, step {j}...")
+            explainer = Explainer(step_size=j, household_id=i)
+            explainer.run()
+            print(f"Explainer run completed for household {i}, step {j}.\n")
+    # explainer = Explainer(step_size=1, household_id=1)
+    # explainer.run()
     print("Explainer run completed.")

@@ -1,7 +1,9 @@
-import pickle
 import torch
 import sys
 import os
+import json
+from adict import adict
+
 # torch.set_default_dtype(torch.float64)
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -13,21 +15,24 @@ class STOTModel:
     def __init__(
         self,
         step_size,
-        config_path="model_configs.pkl",
-        ckpt_path="logs_default/ours_50epochs/epoch=49-step=162749.ckpt"
+        household_id=0
     ):
+        self.weights_dir = os.path.join(os.path.dirname(__file__), '..','..','model_weights', f'household{household_id}')
+        config_path = os.path.join(self.weights_dir, 'config.json')
         self.step_size = step_size
+        weight_pt_file = os.path.join(self.weights_dir, f'weights.pt')
         # Load model config
-        with open(config_path, "rb") as f:
-            self.model_configs = pickle.load(f)
+        with open(config_path, "r") as f:
+            self.model_configs = json.load(f)
+            self.model_configs = adict(self.model_configs)
 
         # Load model checkpoint
-        self.model = GraphTranslatorModule.load_from_checkpoint(
-            ckpt_path,
-            model_configs=self.model_configs
-        )
+        self.model = GraphTranslatorModule(self.model_configs)
+        state_dict = torch.load(weight_pt_file, map_location=torch.device('cuda'))
+        self.model.load_state_dict(state_dict)
+        self.model.eval()  
 
-        print("Model loaded with configurations:", self.model_configs)
+        # print("Model loaded with configurations:", self.model_configs)
 
         # Time encoder
         weekend_days = self.model_configs['DATA_INFO'].get('weeekend_days', None)
