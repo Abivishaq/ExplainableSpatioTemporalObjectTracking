@@ -5,6 +5,7 @@ import networkx as nx
 from pyvis.network import Network
 import numpy as np
 import traceback
+import time
 
 class ContextVisualizer:
     def __init__(self, log_handler):
@@ -68,8 +69,10 @@ class ContextVisualizer:
         """)
 
         with tempfile.TemporaryDirectory() as tmpdir:
+            print("tmp_dir:", tmpdir)
             path = os.path.join(tmpdir, "graph.html")
-            net.save_graph(path)
+            net.save_graph(path)    
+            
             html = open(path, "r", encoding="utf-8").read()
             st.components.v1.html(html, height=650, scrolling=True)
 

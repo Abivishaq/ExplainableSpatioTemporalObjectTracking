@@ -2,6 +2,7 @@ import sys
 import os
 import pandas as pd
 from log_loader import LogLoader
+import torch
 
 
 class LogProcessor:
@@ -58,6 +59,31 @@ class LogProcessor:
         # raise NotImplementedError("Explanation formatting not implemented yet.")
         explanation_str.strip() 
         return(explanation_str)
+    
+
+    def unone_hot(self, tensor: torch.Tensor) -> torch.Tensor:
+        """
+        Converts a one-hot encoded tensor to a vector of class indices.
+        If a row has all zeros, returns -1 for that row.
+
+        Args:
+            tensor (torch.Tensor): n×m tensor of 0s and 1s.
+
+        Returns:
+            torch.Tensor: 1D tensor of length n with class indices (0-based).
+                        Rows with all zeros return -1.
+        """
+        # Get index of max in each row
+        indices = torch.argmax(tensor, dim=1)
+
+        # Identify rows that are all zeros
+        all_zero_mask = (tensor.sum(dim=1) == 0)
+
+        # Replace indices for zero rows with -1
+        indices[all_zero_mask] = -1
+
+        # Convert to 1-based if you want 1,2,... as in your example
+        return indices + 1 * (~all_zero_mask)  # add 1 only where not all-zero
 
     def process_logs(self):
         """
@@ -89,19 +115,35 @@ class LogProcessor:
                 context, pred_n_expl = routine_data
                 
                 time, edges, y_edges = context
-                for pred in pred_n_expl:
-                    # print("Predicted Movement:", pred)
-                    predicted_mov = pred.get("predicted_mov", {})
-                    explanation = pred.get("explanation", {})
-                    row = {
-                        "day_number": day,
-                        "routine_no": routine_no,
-                        "time": time,
-                        "edges": edges,
-                        "predicted_mov": self.predicted_mov_to_str(predicted_mov),
-                        "explanation": self.explanation_to_str(explanation)
-                    }
-                    data.append(row)
+                # for pred in pred_n_expl:
+                #     # print("Predicted Movement:", pred)
+                #     predicted_mov = pred.get("predicted_mov", {})
+                #     explanation = pred.get("explanation", {})
+                #     row = {
+                #         "day_number": day,
+                #         "routine_no": routine_no,
+                #         "time": time,
+                #         "edges": edges,
+                #         "predicted_mov": self.predicted_mov_to_str(predicted_mov),
+                #         "explanation": self.explanation_to_str(explanation)
+                #     }
+                #     data.append(row)
+                
+                # Instead of predicted movement we will look at ground truth movement. 
+                print("y_edges:", y_edges)
+                print("y_edges shape:", y_edges.shape)
+                ind = 3
+                y_0x = y_edges[0,ind,:]
+                y_x0 = y_edges[0,:,ind]
+                print("shape of y_0x:", y_0x.shape)
+                print("shape of y_x0:", y_x0.shape)  
+                print("y_0x non-zero indices:", torch.nonzero(y_0x).squeeze().tolist())
+                print("y_x0 non-zero indices:", torch.nonzero(y_x0).squeeze().tolist())
+                print("sum of y_0x:", torch.sum(y_0x).item())
+                print("sum of y_x0:", torch.sum(y_x0).item())
+
+                raise NotImplementedError("Ground truth movement processing not implemented yet.")
+
         
         self.df = pd.DataFrame(data)
     
