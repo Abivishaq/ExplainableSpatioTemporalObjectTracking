@@ -1,14 +1,43 @@
 import streamlit as st
 
+import sys
+import os
+
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
+from counterfactual_explainer.explainer.explainer import Explainer
+from counterfactual_explainer.util import get_node_classes
+
 class MechanisticExplainer:
-    def __init__(self, node_classes):
+    def __init__(self, node_classes = None):
         """
         Initialize with the list of node class labels.
 
         Args:
             node_classes (List[str]): List mapping node indices to their class names.
         """
+        if node_classes is None:
+            node_classes = get_node_classes()
         self.node_classes = node_classes
+        
+    
+    def compute_explanation(self, household_id, day_no, routine_no):
+        """
+        Computes mechanistic explanations for a given routine.
+
+        Args:
+            household_id (int): Household identifier.
+            day_no (int): Day number.
+            routine_no (int): Routine number.
+        """
+        self.explainer = Explainer(step_size=1, household_id=1)  # Example params
+        pred_n_expl = self.explainer.run_for_single_instance(day_no, routine_no)
+        return pred_n_expl
+
+        
+
+
 
     def get_mechanistic_explanation(self, pred_n_expl):
         """
@@ -59,3 +88,11 @@ class MechanisticExplainer:
         if time_perturbation:
             st.markdown("**Time steps where changing context influenced prediction:**")
             st.write(time_perturbation)
+
+if __name__ == "__main__":
+    explainer = MechanisticExplainer()  # Example node classes
+    pred_n_expl = explainer.compute_explanation(household_id=0, day_no=0, routine_no=61)
+    explainer.get_mechanistic_explanation(pred_n_expl)
+    print("Mechanistic explanation rendering completed.")
+    print("mechnasitic explanation:", pred_n_expl)
+    # st.rerun()

@@ -9,7 +9,7 @@ file_dir = os.path.dirname(os.path.abspath(__file__))
 ce_dir = os.path.dirname(file_dir)
 
 
-CSV_FOLDER = os.path.join(ce_dir,"processed_logs")
+CSV_FOLDER = os.path.join(ce_dir,"processed_logs_gt","diff_steps","step_size_1")
 # ----------------------------------
 
 def get_csv_files(folder):

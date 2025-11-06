@@ -19,9 +19,11 @@ class LogProcessor:
         this_file_dir = os.path.dirname(os.path.abspath(__file__))
         this_file_parent_dir = os.path.dirname(this_file_dir)
         household_id = log_loader.household_id
-        if not os.path.exists(os.path.join(this_file_parent_dir, 'processed_logs')):
-            os.makedirs(os.path.join(this_file_parent_dir, 'processed_logs'))
-        self.save_to_csv(os.path.join(this_file_parent_dir, 'processed_logs', 'diff_steps', f'step_size_{self.step_size}', f'household_{household_id}_logs.csv'))
+        if not os.path.exists(os.path.join(this_file_parent_dir, 'processed_logs_gt')):
+            os.makedirs(os.path.join(this_file_parent_dir, 'processed_logs_gt'))
+        if not os.path.exists(os.path.join(this_file_parent_dir, 'processed_logs_gt', 'diff_steps', f'step_size_{self.step_size}')):
+            os.makedirs(os.path.join(this_file_parent_dir, 'processed_logs_gt', 'diff_steps', f'step_size_{self.step_size}'))
+        self.save_to_csv(os.path.join(this_file_parent_dir, 'processed_logs_gt', 'diff_steps', f'step_size_{self.step_size}', f'household_{household_id}_logs.csv'))
 
     
     def predicted_mov_to_str(self, predicted_mov):
@@ -82,8 +84,13 @@ class LogProcessor:
         # Replace indices for zero rows with -1
         indices[all_zero_mask] = -1
 
-        # Convert to 1-based if you want 1,2,... as in your example
-        return indices + 1 * (~all_zero_mask)  # add 1 only where not all-zero
+        # Convert to 0-based if you want 1,2,... as in your example
+        return indices 
+    def mov_to_str(self, mov):
+        """
+        Convert movement list to string representation.
+        """
+        return self.predicted_mov_to_str(mov)
 
     def process_logs(self):
         """
@@ -115,10 +122,12 @@ class LogProcessor:
                 context, pred_n_expl = routine_data
                 
                 time, edges, y_edges = context
+                # raise_notimplemented = False
                 # for pred in pred_n_expl:
                 #     # print("Predicted Movement:", pred)
                 #     predicted_mov = pred.get("predicted_mov", {})
                 #     explanation = pred.get("explanation", {})
+                #     print("Predicted Movement:", predicted_mov)
                 #     row = {
                 #         "day_number": day,
                 #         "routine_no": routine_no,
@@ -128,21 +137,29 @@ class LogProcessor:
                 #         "explanation": self.explanation_to_str(explanation)
                 #     }
                 #     data.append(row)
+                #     raise_notimplemented = True
                 
                 # Instead of predicted movement we will look at ground truth movement. 
-                print("y_edges:", y_edges)
-                print("y_edges shape:", y_edges.shape)
-                ind = 3
-                y_0x = y_edges[0,ind,:]
-                y_x0 = y_edges[0,:,ind]
-                print("shape of y_0x:", y_0x.shape)
-                print("shape of y_x0:", y_x0.shape)  
-                print("y_0x non-zero indices:", torch.nonzero(y_0x).squeeze().tolist())
-                print("y_x0 non-zero indices:", torch.nonzero(y_x0).squeeze().tolist())
-                print("sum of y_0x:", torch.sum(y_0x).item())
-                print("sum of y_x0:", torch.sum(y_x0).item())
+                
+                y = self.unone_hot(y_edges[0])
+                x = self.unone_hot(edges[0])
+                diff_inds = (y != x).nonzero(as_tuple=True)[0]
+                for di in diff_inds:
+                    # print("x[di]:", x[di].item(), "y[di]:", y[di].item())
+                    movs = [di.item(), x[di].item(), y[di].item()]
+                    row = {
+                        "day_number": day,
+                        "routine_no": routine_no,
+                        "time": time,
+                        "edges": edges,
+                        "gt_mov": self.mov_to_str(movs),
+                        "explanation": "Ground truth movement"
+                    }
+                    data.append(row)
 
-                raise NotImplementedError("Ground truth movement processing not implemented yet.")
+                
+                # if raise_notimplemented:
+                #     raise NotImplementedError("Ground truth movement processing not implemented yet.")
 
         
         self.df = pd.DataFrame(data)

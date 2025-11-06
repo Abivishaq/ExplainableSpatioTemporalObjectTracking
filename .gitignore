@@ -138,3 +138,6 @@ logs*
 screenlog*
 *.pt
 data/
+data/HOMER/household0/processed/*
+data/HOMER/household0/processed/test/*
+counterfactual_explainer/processed_logs/*

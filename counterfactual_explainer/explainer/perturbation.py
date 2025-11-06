@@ -27,7 +27,7 @@ class PerturbationEngine:
             cloned_window.append(cloned_step)
         return cloned_window
     
-    def explain_predicted_movement(self, routine_window, pred_mov, true_pred):
+    def explain_predicted_movement(self, routine_window, pred_mov, true_pred, true_edges):
         """
         Explains one predicted movement. 
 
@@ -58,9 +58,13 @@ class PerturbationEngine:
           
         ###################################################################
         # Stage 2: time perturbation from 380 to 1550 (Range obeserved in HOMER dataset)
-        influential_time_perturbation = []
+        time_when_pred_same = []
+        morning_conf = 0.0
+
+        afternoon_conf = 0.0
+        evening_conf = 0.0
         for i in range(380, 1551, 10):
-            break  # Skipping the time perturbation stage for now for faster testing.
+            # break  # Skipping the time perturbation stage for now for faster testing.
             # cloning the routine window to avoid modifying the original
             perturb_routine = self.clone_routine_window(routine_window)
 
@@ -73,15 +77,66 @@ class PerturbationEngine:
                 perturb_time_target += 10  # Increment time for each step
 
             # Run inference on perturbed routine window
-            inp, pred, gt, edge_probs = self.model.infer(perturb_routine)        
+            inp, pred, gt, edge_probs = self.model.infer(perturb_routine)
+            conf = edge_probs[0][pred_mov[0]][pred_mov[2]].item()       
 
             # check if predicted movement is influential
-            if(pred[pred_mov[0]]!=true_pred[pred_mov[0]]):
-                # prediction is influenced by the perturbation
-                influential_time_perturbation.append(i)
-        ############### END OF STAGE 2 ################    
+            # if(pred[pred_mov[0]]==true_pred[pred_mov[0]]):
+            #     # prediction is influenced by the perturbation
+            #     time_when_pred_same.append(i)
+            # sum row 0
+            if i <= (380 + 10*33):  # morning
+                morning_conf += conf
+            elif i <= (380 + 10*69):  # afternoon
+                afternoon_conf += conf
+            else:  # evening
+                evening_conf += conf
+        ## aggregate time
+        # moring: 6:00 to 11:50 -> 0 to 33
+        # afternoon: 12:00 to 17:50 -> 34 to 69
+        # evening: 18:00 to 26:00 -> 70 to 118
+        # morning range:
+        morning_conf = morning_conf / (33 - 0 + 1)
+        afternoon_conf = afternoon_conf / (69 - 34 + 1)
+        evening_conf = evening_conf / (118 - 70 + 1)
         
-        return {"movement_perturbation":valid_movement_perturbation, "time_perturbation": influential_time_perturbation}
+        curr_time = routine_window[0]['time'].item()
+        if curr_time <= (380 + 10*33):  # morning
+            curr_period_conf = ("morning", morning_conf)
+            other_period_confs = [("afternoon",afternoon_conf), ("evening", evening_conf)]
+        elif curr_time <= (380 + 10*69):  # afternoon
+            curr_period_conf = ("afternoon", afternoon_conf)
+            other_period_confs = [("morning", morning_conf), ("evening", evening_conf)]
+        else:  # evening
+            curr_period_conf = ("evening", evening_conf)
+            other_period_confs = [("morning", morning_conf), ("afternoon", afternoon_conf)]
+        time_perturb_string = ""
+        time_perturb_note = ""
+        # both other greater than current
+        if all(curr_period_conf[1] < opc[1] for opc in other_period_confs):
+            time_perturb_string = f""
+            time_perturb_note += f"current time period '{curr_period_conf[0]}' has the lowest confidence"
+        elif all(curr_period_conf[1] > opc[1] for opc in other_period_confs):
+            time_perturb_string = f"it is {curr_period_conf[0]}"
+            time_perturb_note += f"current time period '{curr_period_conf[0]}' has the highest confidence"
+        elif other_period_confs[0][1] > curr_period_conf[1] and other_period_confs[1][1] < curr_period_conf[1]:
+            time_perturb_string = f"it is not {other_period_confs[1][0]}"
+            time_perturb_note += f"time period '{other_period_confs[1][0]}' has the lowest confidence"
+        elif other_period_confs[1][1] > curr_period_conf[1] and other_period_confs[0][1] < curr_period_conf[1]:
+            time_perturb_string = f"it is not {other_period_confs[0][0]}"
+            time_perturb_note += f"time period '{other_period_confs[0][0]}' has the lowest confidence"
+        else:
+            raise ValueError("Unexpected confidence comparison results.")
+
+        ############### END OF STAGE 2 ################    
+        time_perturb = {
+            "morning_conf": morning_conf,
+            "afternoon_conf": afternoon_conf,
+            "evening_conf": evening_conf,
+            "time_perturb_note": time_perturb_note,
+            "time_perturb_string": time_perturb_string
+        }
+        return {"movement_perturbation":valid_movement_perturbation, "time_perturbation": time_perturb}
     
     
     def get_predicted_movements(self, inp, pred):
@@ -107,7 +162,7 @@ class PerturbationEngine:
         
         return movements
         
-    def run(self, routine_window, inp, pred):
+    def run(self, routine_window, inp, pred, gt_edges):
         """
         """
         routine_window_copy = self.clone_routine_window(routine_window)
@@ -121,7 +176,8 @@ class PerturbationEngine:
             exp_pred = self.explain_predicted_movement(
                 routine_window_copy,
                 pred_mov,
-                true_pred=pred
+                true_pred=pred,
+                true_edges=gt_edges
             )
             results.append({"predicted_mov":pred_mov,"explanation":exp_pred})
 
