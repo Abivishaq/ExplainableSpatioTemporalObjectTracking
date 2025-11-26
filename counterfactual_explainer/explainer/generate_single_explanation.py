@@ -66,11 +66,20 @@ def templated_explanation(pred_n_expl, node_classes):
     
     return explanation_str
 if __name__ == "__main__":
-    explainer = Explainer(step_size=1, household_id=0)  # Example params
-    pred_n_expl_s = explainer.run_for_single_instance(9, 37)
-    # print("Mechanistic explanation rendering completed.")
-    
+    # parameters
+    home_id = 2
+    day_no = 6
+    routine_no = 39
+    time_target = None
+    explainer = Explainer(step_size=1, household_id=home_id)  # Example params
+
+    pred_n_expl_s = explainer.run_for_single_instance(day_no=day_no, routine_no=routine_no, time_target=time_target)
+    print("Mechanistic explanation rendering completed.")
+
+    # print("pred_n_expl:", pred_n_expl_s)
     # assert len(pred_n_expl_s) == 1
+    if(len(pred_n_expl_s) == 0 ):
+        print("No action")
 
     # print("mechnasitic explanation:", pred_n_expl[0])
     for pred_n_expl in pred_n_expl_s:

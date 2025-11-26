@@ -88,7 +88,7 @@ class Explainer:
             self.movement_tracker.reset()  # Reset movement tracker for the next day
             self.logger.save_day_log(day_no)
         
-    def run_for_single_instance(self, day_no, routine_no):
+    def run_for_single_instance(self, day_no, routine_no, time_target=None):
         """
         Run explainer for a single routine instance for debugging.
         """
@@ -99,11 +99,12 @@ class Explainer:
         
         for no, routine_window in enumerate(routine_iterator):
             if no == routine_no:
-                # perturb_time_target = 550  # Example: perturb to afternoon time
-                # for step in routine_window:
-                    
-                #     step['time'] = torch.tensor(perturb_time_target, device=step['time'].device, dtype=step['time'].dtype)
-                #     step['context_time'] = self.model.time_encoder(perturb_time_target).unsqueeze(0)
+                if time_target is not None:
+                    perturb_time_target = time_target  # Example: perturb to afternoon time
+                    for step in routine_window:
+                        
+                        step['time'] = torch.tensor(perturb_time_target, device=step['time'].device, dtype=step['time'].dtype)
+                        step['context_time'] = self.model.time_encoder(perturb_time_target).unsqueeze(0)
                 # Step 1: Inference:
                 inp, pred, gt, edge_probs = self.model.infer(routine_window)
             
