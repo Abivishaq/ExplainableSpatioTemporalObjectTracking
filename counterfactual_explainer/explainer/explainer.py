@@ -121,6 +121,74 @@ class Explainer:
 
         return pred_n_expl
 
+    def run_for_single_instance_with_manual_movements(self, day_no, routine_no, manual_movements, time_target=None):
+        """
+        Run explainer for a single routine instance, using manually provided
+        historic movements instead of (or in addition to) automatically
+        detected ones.
+
+        Args:
+            day_no (int): Index of the day in the test set.
+            routine_no (int): Index of the routine window within the day.
+            manual_movements (Iterable[Tuple[int, int, int]]): Movements in the
+                same format as `condensed_movements` from `MovementTracker.detect`,
+                i.e. (node_idx, prev_parent, new_parent).
+            time_target (int, optional): If provided, overrides the time for
+                all steps in the target window (same semantics as
+                `run_for_single_instance`).
+        """
+        test_routines = self.data_manager.test_routines
+        day_routine, additional_info = test_routines[day_no]
+        routine_iterator = self.data_manager.get_iterator(day_routine, step_size=self.step_size)
+
+        # Reset for this run
+        self.movement_tracker.reset()
+
+        pred_n_expl = None
+
+        for no, routine_window in enumerate(routine_iterator):
+            if no == routine_no:
+                # Seed movement history with user-provided movements for this run
+                # and apply them directly to the scene graph of the current window.
+                if manual_movements is not None:
+                    # 1) Record movements in the tracker (for perturbation engine).
+                    self.movement_tracker.add_movements(manual_movements)
+
+                    # 2) Apply movements to the current routine window's edges tensor.
+                    #    Each movement is (node_idx, prev_parent, new_parent).
+                    edges = routine_window[0]['edges']  # shape: [1, num_nodes, num_nodes]
+                    for node_idx, prev_parent, new_parent in manual_movements:
+                        # Clear existing parent(s) for this node.
+                        edges[0, node_idx, :] = 0
+                        # Set the new parent.
+                        edges[0, node_idx, int(new_parent)] = 1
+
+                if time_target is not None:
+                    perturb_time_target = time_target
+                    for step in routine_window:
+                        step['time'] = torch.tensor(
+                            perturb_time_target,
+                            device=step['time'].device,
+                            dtype=step['time'].dtype
+                        )
+                        step['context_time'] = self.model.time_encoder(perturb_time_target).unsqueeze(0)
+                # Step 1: Inference:
+                inp, pred, gt, edge_probs = self.model.infer(routine_window)
+
+                # Step 2: Perturbation (uses movement_tracker.movement_dict,
+                # which now includes manual movements and any previously
+                # accumulated movements).
+                pred_n_expl = self.perturb_engine.run(routine_window, inp, pred, edge_probs)
+                break
+            else:
+                # Populate natural movement history up to the target routine.
+                self.movement_tracker.update(routine_window)
+
+        # Clean up tracker state after this single-instance run.
+        self.movement_tracker.reset()
+
+        return pred_n_expl
+
 
 
 if __name__ == "__main__":

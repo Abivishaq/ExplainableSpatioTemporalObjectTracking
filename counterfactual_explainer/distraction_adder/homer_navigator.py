@@ -46,7 +46,7 @@ class HOMERNavigator:
         st.header("HOMER Dataset Navigator")
 
         data_dir = st.text_input("Enter path to HOMER dataset directory (must contain 'processed'):",
-                                 value=self.dataset_path or 'data/HOMER/household0')
+                                 value=self.dataset_path or 'data/HOMER/household0', key='data_dir_input')
 
         if not data_dir or not os.path.exists(data_dir):
             st.warning("Please enter a valid path to the dataset directory.")
@@ -74,6 +74,19 @@ class HOMERNavigator:
             self.node_classes = dataset.node_classes
 
         return dataset, day_idx, routine_idx
+
+    def get_current_selection(self):
+        """
+        Return the currently loaded dataset and the last selected
+        (day_idx, routine_idx) without creating any Streamlit widgets.
+
+        Intended for use in non-UI code paths (e.g., explanation runner)
+        to avoid duplicating widget definitions/keys.
+        """
+        if self.dataset is None or self.prev_day_idx is None or self.prev_routine_idx is None:
+            raise ValueError("Dataset or selection not initialized. Call get_homer_dataset() first.")
+
+        return self.dataset, self.prev_day_idx, self.prev_routine_idx
 
     def copy_active_routine(self):
         copy_routine = {}

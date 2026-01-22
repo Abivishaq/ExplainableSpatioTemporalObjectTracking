@@ -74,6 +74,41 @@ class MovementTracker:
         Resets the movement tracker.
         """
         self.movement_dict = {}
+
+    def add_movements(self, condensed_movements):
+        """
+        Manually add movements to the internal movement dictionary.
+
+        Args:
+            condensed_movements (Iterable[Tuple[int, int, int]]):
+                Each element is (node_idx, prev_parent, new_parent) as
+                produced by `detect`:
+                    - node_idx: index of the object/node that moved
+                    - prev_parent: its previous parent index
+                    - new_parent: its new parent index (unused here, but kept
+                      for interface consistency)
+        """
+        if condensed_movements is None:
+            return
+
+        for movement in condensed_movements:
+            # Expect a 3-tuple/list: (node_idx, prev_parent, new_parent)
+            if not (isinstance(movement, (tuple, list)) and len(movement) == 3):
+                raise ValueError(
+                    "Each movement must be a tuple/list of the form "
+                    "(node_idx, prev_parent, new_parent)."
+                )
+
+            node_idx, prev_parent, new_parent = movement
+
+            # Basic sanity checks
+            assert isinstance(node_idx, int), "node_idx must be an int."
+            assert 0 <= node_idx < self.num_nodes, "node_idx out of range."
+
+            # Store the last known previous parent for this node
+            self.movement_dict[node_idx] = int(prev_parent)
+        
+                
     
     
         

@@ -53,6 +53,17 @@ class SceneGraphEditor:
 
         # Update the distractor routine if selection changed
         if new_parent != distractor_parent:
+            # Ensure movement history container exists
+            if "manual_movements" not in st.session_state:
+                st.session_state.manual_movements = []
+
+            # Log this edit as a movement: (node_idx, prev_parent, new_parent)
+            prev_p = distractor_parent
+            # If there was no parent before, we encode as -1 to keep the triple structure.
+            prev_parent_idx = -1 if prev_p is None else int(prev_p)
+            new_parent_idx = -1 if new_parent is None else int(new_parent)
+            st.session_state.manual_movements.append((int(node_idx), prev_parent_idx, new_parent_idx))
+
             # Reset all incoming edges to 0
             self.navigator.distractor_routine['edges'][0, node_idx,:] = 0
             if new_parent is not None:

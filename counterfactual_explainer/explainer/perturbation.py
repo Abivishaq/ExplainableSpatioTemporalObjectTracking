@@ -40,6 +40,8 @@ class PerturbationEngine:
         # Stage 1: movement perturbation
         movement_dict = self.movement_tracker.movement_dict
         for obj in movement_dict.keys():
+            if obj == pred_mov[0]:
+                continue # skip the object that is the predicted movement
             perturb_routine = self.clone_routine_window(routine_window)
 
             # Perturbing the input
