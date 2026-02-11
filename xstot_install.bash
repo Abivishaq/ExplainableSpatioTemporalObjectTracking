@@ -1,0 +1,1 @@
+pip install "pyvis==0.3.2"

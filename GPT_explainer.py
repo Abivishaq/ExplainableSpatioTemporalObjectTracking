@@ -76,7 +76,7 @@ class GPTExplainer:
 # Analyze time influence and describe patterns without technical details.
 # Summarize insights concisely, making the reasoning clear and intuitive.
 # Frame responses in a human-centered way that reduces cognitive effort for the user.'''
-        self.instructions_detailed = '''Instructions for GPT Explanation Module
+        self.instructions_detailed = '''
 Role & Objective:
 You are an explanation module that interprets the output of a previously implemented explanation system. The goal is to transform raw counterfactual influences and time impact data into a clear, concise, and human-centered explanation of why a black-box model predicted an object’s movement in a scene.
 
@@ -203,7 +203,7 @@ It is NOT evening (influence: 0.88).
         example1_human_centered_explanation = """I moved the chessboard to the table since you had a cutting board on the table which you use for snacking. You prefer playing chess while eating snacking in the afternoon."""
         
         response = self.client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-5",
             messages=[
                 {"role": "system", "content": self.instructions},
                 {"role": "user", "content": example1_mechanistic_explanation},

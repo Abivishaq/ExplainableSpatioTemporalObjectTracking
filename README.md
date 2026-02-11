@@ -1,3 +1,16 @@
+# Explaianation for STOT
+## Setup
+conda create --name <env-name> --file requirements_conda.txt 
+conda activate <env-name>
+pip install -r requirements_pip.txt
+
+
+pip install streamlit
+pip install protobuf==3.20.*
+pip install pyvis
+
+
+
 # SpatioTemporalObjectTracking
 Graph translation network for modeling spatio-temporal dynamics of household objects for our paper ['Proactive Robot Assistance via Spatio-Temporal Object Modeling'](https://openreview.net/pdf?id=th7GW868Pok). The model reads in an input graph representing the environment and time, and translates it to a probabilistic output graph representing the environment at the next time step. It uses the HOMER dataset, details about which can be found [here](https://github.com/GT-RAIL/rail_tasksim/tree/homer/routines). The processed version of the dataset required to run this code is present in this repository, however the complete dataset, containing human readable scripts, object arrangement trees, visuals, etc., is available for download [here](https://www.dropbox.com/s/8qs1znw3fmqho44/HOMER.zip?dl=0)
 
